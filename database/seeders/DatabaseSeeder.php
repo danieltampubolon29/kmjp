@@ -13,7 +13,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
 
         User::factory()->create([
             'name' => 'Admin',
@@ -27,5 +26,13 @@ class DatabaseSeeder extends Seeder
             'role' => 'marketing',
             'password' => 'daniel123',
         ]);
+        User::factory()->create([
+            'name' => 'Fernan Dev',
+            'email' => 'fernandev@gmail.com',
+            'role' => 'marketing',
+            'password' => 'daniel123',
+        ]);
+        $this->call(AnggotaSeeder::class);
+        $this->call(PencairanSeeder::class);
     }
 }
