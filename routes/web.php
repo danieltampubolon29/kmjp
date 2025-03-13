@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AngsuranController;
 use App\Http\Controllers\SimpananController;
 use App\Http\Controllers\PencairanController;
 use App\Http\Controllers\Admin\AdminController;
@@ -28,6 +29,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/pencairan/{id}/lock', [PencairanController::class, 'lock'])->name('pencairan.lock');
     
     Route::resource('simpanan', SimpananController::class);
+    Route::post('/simpanan/{id}/lock', [SimpananController::class, 'lock'])->name('simpanan.lock');
+
+    Route::resource('angsuran', AngsuranController::class);
 });
 
 require __DIR__ . '/auth.php';

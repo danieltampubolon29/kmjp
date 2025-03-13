@@ -18,6 +18,7 @@ class Simpanan extends Model
         'jenis_transaksi',
         'jenis_simpanan',
         'nominal',
+        'is_locked',
     ];
     public function marketing()
     {

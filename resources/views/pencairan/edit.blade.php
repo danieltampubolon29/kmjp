@@ -87,7 +87,7 @@
                             <input type="hidden" name="marketing_id" id="marketing_id" value="{{ auth()->id() }}">
                         </div>
                         <div class="card-footer bg-light d-flex justify-content-end">
-                            <a href="{{ route('pencairan.index') }}" class="btn btn-secondary me-2">
+                            <a href="{{ route('pencairan.show', $pencairan->id) }}" class="btn btn-secondary me-2">
                                 <i class="ri-home-4-line"></i>
                             </a>
                             <button type="button" class="btn btn-danger me-2" onclick="resetForm()">

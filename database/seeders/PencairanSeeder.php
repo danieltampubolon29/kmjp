@@ -23,7 +23,7 @@ class PencairanSeeder extends Seeder
             return;
         }
 
-        for ($i = 1; $i <= 50; $i++) { 
+        for ($i = 1; $i <= 5; $i++) { 
             $anggotaId = $faker->randomElement($anggotas); 
             $marketingId = $faker->randomElement($users); 
 
@@ -34,6 +34,7 @@ class PencairanSeeder extends Seeder
             $pinjamanKe = $lastPinjaman ? $lastPinjaman->pinjaman_ke + 1 : 1;
 
             $nominal = $faker->numberBetween(500000, 5000000); 
+            $sisa_kredit = $nominal + $nominal * 0.2;
 
             DB::table('pencairan')->insert([
                 'anggota_id' => $anggotaId,
@@ -42,6 +43,7 @@ class PencairanSeeder extends Seeder
                 'nominal' => $nominal,
                 'tenor' => $faker->numberBetween(1, 52), 
                 'jatuh_tempo' => $faker->randomElement(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Harian']),
+                'sisa_kredit' => $sisa_kredit,
                 'tanggal_pencairan' => $faker->dateTimeBetween('-1 year', 'now')->format('Y-m-d'), 
                 'foto_pencairan' => null, 
                 'foto_rumah' => null, 

@@ -37,6 +37,11 @@
                             Simpanan
                         </a>
                     </li>
+                    <li class="sidebar-dropdown-menu-item">
+                        <a href="{{ route('angsuran.index') }}">
+                            Angsuran
+                        </a>
+                    </li>
                 </ul>
             </li>
             

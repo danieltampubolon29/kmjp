@@ -61,6 +61,10 @@
                                         <p class="mb-1"><strong>Marketing</strong></p>
                                         <p>{{ $pencairan->marketing }}</p>
                                     </div>
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong>Sisa Kredit</strong></p>
+                                        <p>Rp. {{ number_format($pencairan->sisa_kredit, 0, ',', '.') }},-</p>
+                                    </div>
                                 </div>
 
                                 <div class="mt-4">

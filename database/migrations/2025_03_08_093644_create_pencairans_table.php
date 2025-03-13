@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('nominal')->unsigned(); 
             $table->integer('tenor'); 
             $table->string('jatuh_tempo');
+            $table->integer('sisa_kredit');
             $table->date('tanggal_pencairan'); 
             $table->string('foto_pencairan')->nullable();
             $table->string('foto_rumah')->nullable();

@@ -101,22 +101,42 @@ class AnggotaController extends Controller
 
 
     public function update(Request $request, $id)
-    {
-        $anggota = Anggota::findOrFail($id);
-        $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-            'tanggal_lahir' => 'required|date',
-            'alamat_ktp' => 'required|string',
-            'alamat_domisili' => 'required|string',
-            'no_hp' => 'nullable|string|max:15',
-            'tanggal_daftar' => 'required|date',
-        ]);
+{
+    // Cari anggota berdasarkan ID
+    $anggota = Anggota::findOrFail($id);
 
+    // Validasi input dari request
+    $validated = $request->validate([
+        'nama' => 'required|string|max:255',
+        'tanggal_lahir' => 'required|date',
+        'alamat_ktp' => 'required|string',
+        'alamat_domisili' => 'required|string',
+        'no_hp' => 'nullable|string', 
+        'tanggal_daftar' => 'required|date',
+    ], [
+        'nama.required' => 'Nama wajib diisi.',
+        'tanggal_lahir.required' => 'Tanggal lahir wajib diisi.',
+        'tanggal_lahir.date' => 'Format tanggal lahir tidak valid.',
+        'alamat_ktp.required' => 'Alamat KTP wajib diisi.',
+        'alamat_domisili.required' => 'Alamat domisili wajib diisi.',
+        'no_hp.string' => 'Nomor HP wajib diisi.',
+        'tanggal_daftar.required' => 'Tanggal daftar wajib diisi.',
+    ]);
+
+    try {
+        // Update data anggota
         $anggota->update($validated);
 
-
-        return redirect()->route('anggota.show', ['anggotum' => $anggota->id])->with('success', 'Data anggota berhasil diperbarui.');
+        // Redirect ke halaman detail anggota dengan pesan sukses
+        return redirect()->route('anggota.show', ['anggotum' => $anggota->id])
+            ->with('success', 'Data anggota berhasil diperbarui.');
+    } catch (\Exception $e) {
+        // Jika terjadi kesalahan, redirect kembali ke halaman detail anggota dengan pesan error
+        return redirect()->route('anggota.show', ['anggotum' => $anggota->id])
+            ->withErrors(['error' => 'Terjadi kesalahan saat memperbarui data. Silakan coba lagi.'])
+            ->withInput();
     }
+}
 
 
     public function destroy($id)

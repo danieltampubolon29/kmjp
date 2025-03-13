@@ -12,7 +12,7 @@ class AnggotaSeeder extends Seeder
     {
         $faker = Faker::create(); 
 
-        for ($i = 1; $i <= 15; $i++) { 
+        for ($i = 1; $i <= 5; $i++) { 
             DB::table('anggota')->insert([
                 'no_anggota' => 00 + $i, 
                 'nama' => $faker->name(),

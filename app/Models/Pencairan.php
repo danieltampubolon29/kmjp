@@ -17,6 +17,7 @@ class Pencairan extends Model
         'nominal',
         'tenor',
         'jatuh_tempo',
+        'sisa_kredit',
         'tanggal_pencairan',
         'foto_pencairan',
         'foto_rumah',
@@ -37,6 +38,9 @@ class Pencairan extends Model
     }
     public function simpanan(){
         return $this->hasMany(Simpanan::class);
+    }
+    public function angsuran(){
+        return $this->hasMany(Angsuran::class);
     }
 
 }
