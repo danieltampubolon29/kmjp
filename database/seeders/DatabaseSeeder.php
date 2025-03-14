@@ -33,6 +33,6 @@ class DatabaseSeeder extends Seeder
             'password' => 'daniel123',
         ]);
         $this->call(AnggotaSeeder::class);
-        $this->call(PencairanSeeder::class);
+        // $this->call(PencairanSeeder::class);
     }
 }

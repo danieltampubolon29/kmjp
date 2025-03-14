@@ -30,6 +30,7 @@
                                         <th class="table-dark text-center align-middle">NAMA</th>
                                         <th class="table-dark text-center align-middle">TANGGAL</th>
                                         <th class="table-dark text-center align-middle">NOMINAL</th>
+                                        <th class="table-dark text-center align-middle">STATUS</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -40,6 +41,13 @@
                                             <td>{{ $pencairan->anggota->nama }}</td>
                                             <td>{{ $pencairan->tanggal_pencairan }}</td>
                                             <td>Rp. {{ number_format($pencairan->nominal, 0, ',', '.') }},-</td>
+                                            <td>
+                                                @if($pencairan->status == 1)
+                                                    <button class="btn btn-success btn-sm text-light fw-bold" >Lunas</button>
+                                                @elseif($pencairan->status == 0)
+                                                    <button class="btn btn-warning btn-sm text-light fw-bold" >Proses</button>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>

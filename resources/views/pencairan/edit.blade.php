@@ -23,15 +23,15 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="no_anggota" class="form-label">No Anggota</label>
-                                    <input type="text" id="no_anggota" value="{{ $pencairan->anggota->no_anggota }}" class="form-control" readonly>
+                                    <input type="text" name="no_anggota" id="no_anggota" value="{{ $pencairan->anggota->no_anggota }}" class="form-control" readonly>
                                 </div>
                             </div>
                             <input type="hidden" name="anggota_id" id="anggota_id" value="{{ $pencairan->anggota_id }}">
                             
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="nama_anggota" class="form-label">Nama Anggota</label>
-                                    <input type="text" id="nama_anggota" value="{{ $pencairan->anggota->nama }}" class="form-control" readonly>
+                                    <label for="nama" class="form-label">Nama Anggota</label>
+                                    <input type="text" name="nama" id="nama" value="{{ $pencairan->anggota->nama }}" class="form-control" readonly>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="pinjaman_ke" class="form-label">Pinjaman Ke</label>

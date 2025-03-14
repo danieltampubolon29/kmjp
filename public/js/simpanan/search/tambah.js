@@ -4,7 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const anggotaId = document.getElementById('anggota_id');
     const noAnggota = document.getElementById('no_anggota');
     const namaAnggota = document.getElementById('nama_anggota');
-    const pinjamanKe = document.getElementById('pinjaman_ke');
 
     searchInput.addEventListener('input', function () {
         const query = this.value.trim();

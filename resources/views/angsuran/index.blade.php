@@ -35,8 +35,9 @@
                                     @foreach ($angsurans as $angsuran)
                                         <tr data-href="{{ route('angsuran.show', $angsuran->id) }}">
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $angsuran->pencairan->anggota->no_anggota }}</td>
-                                            <td>{{ $angsuran->pencairan->anggota->nama }}</td>
+                                            <td>{{ $angsuran->pencairan->no_anggota }}</td>
+                                            <td>{{ $angsuran->pencairan->nama }}</td>
+                                            <td>Rp. {{ number_format($angsuran->nominal, 0, ',', '.') }},-</td>
                                         </tr>
                                     @endforeach
                                 </tbody>

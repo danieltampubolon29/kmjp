@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchResults = document.getElementById('searchResults');
     const anggotaId = document.getElementById('anggota_id');
     const noAnggota = document.getElementById('no_anggota');
-    const namaAnggota = document.getElementById('nama_anggota');
+    const namaAnggota = document.getElementById('nama');
     const pinjamanKe = document.getElementById('pinjaman_ke');
 
     searchInput.addEventListener('input', function () {

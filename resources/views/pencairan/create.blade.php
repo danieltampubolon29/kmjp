@@ -22,15 +22,15 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="no_anggota" class="form-label">No Anggota</label>
-                                    <input type="text" id="no_anggota" class="form-control" readonly>
+                                    <input type="text" name="no_anggota" id="no_anggota" class="form-control" required readonly>
                                 </div>
                             </div>
                             <input type="hidden" name="anggota_id" id="anggota_id">
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="nama_anggota" class="form-label">Nama Anggota</label>
-                                    <input type="text" id="nama_anggota" class="form-control" readonly>
+                                    <label for="nama" class="form-label">Nama Anggota</label>
+                                    <input type="text" name="nama" id="nama" class="form-control" required readonly>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="pinjaman_ke" class="form-label">Pinjaman Ke</label>
@@ -52,7 +52,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="tenor" class="form-label">Tenor (hari/minggu)</label>
+                                    <label for="tenor" class="form-label">Tenor</label>
                                     <input type="number" id="tenor" name="tenor" class="form-control" required>
                                 </div>
                                 <div class="col-md-6 mb-3">

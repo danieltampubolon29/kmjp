@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProgresController;
 use App\Http\Controllers\AngsuranController;
 use App\Http\Controllers\SimpananController;
 use App\Http\Controllers\PencairanController;
@@ -21,7 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('anggota', AnggotaController::class);
     Route::post('/anggota/{id}/upload', [AnggotaController::class, 'upload'])->name('anggota.upload');
     Route::post('/anggota/{id}/lock', [AnggotaController::class, 'lock'])->name('anggota.lock');
-    
+
     Route::resource('pencairan', PencairanController::class);
     Route::get('/get-pinjaman-ke/{anggotaId}', [PencairanController::class, 'getPinjamanKe'])->name('get.pinjaman.ke');
     Route::get('/search-anggota', [PencairanController::class, 'searchAnggota'])->name('search.anggota');
@@ -30,8 +31,13 @@ Route::middleware('auth')->group(function () {
     
     Route::resource('simpanan', SimpananController::class);
     Route::post('/simpanan/{id}/lock', [SimpananController::class, 'lock'])->name('simpanan.lock');
-
+    
     Route::resource('angsuran', AngsuranController::class);
+    Route::post('/angsuran/{id}/lock', [AngsuranController::class, 'lock'])->name('angsuran.lock');
+    Route::get('/search-pencairan', [AngsuranController::class, 'searchPencairan'])->name('search.pencairan');
+
+    Route::get('/progres', [ProgresController::class, 'progres'])->name('laporan.progres');
+    Route::get('/progres/get-pencairan-data', [ProgresController::class, 'getPencairanData'])->name('progres.get-pencairan-data');
 });
 
 require __DIR__ . '/auth.php';

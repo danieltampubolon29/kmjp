@@ -61,6 +61,8 @@ class PencairanController extends Controller
     {
         $validated = $request->validate([
             'anggota_id' => 'required|exists:anggota,id',
+            'no_anggota' => 'required',
+            'nama' => 'required',
             'produk' => 'required|in:Harian,Mingguan',
             'nominal' => 'required|integer|min:0|max:4294967295',
             'tenor' => 'required|integer|min:1',
@@ -106,6 +108,8 @@ class PencairanController extends Controller
     {
         $validated = $request->validate([
             'anggota_id' => 'required|exists:anggota,id',
+            'no_anggota' => 'required',
+            'nama' => 'required',
             'produk' => 'required|in:Harian,Mingguan',
             'nominal' => 'required|numeric|min:0',
             'tenor' => 'required|integer|min:1',
@@ -241,6 +245,7 @@ class PencairanController extends Controller
         return response()->json($pinjamanKe);
     }
 
+    // untuk pencairan create edit
     public function searchAnggota(Request $request)
     {
         $query = $request->input('q');
@@ -254,4 +259,7 @@ class PencairanController extends Controller
 
         return response()->json($anggotas);
     }
+    
+
+    
 }

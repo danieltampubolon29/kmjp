@@ -12,6 +12,8 @@ class Pencairan extends Model
     protected $table = 'pencairan';
     protected $fillable = [
         'anggota_id',
+        'no_anggota',
+        'nama',
         'pinjaman_ke',
         'produk',
         'nominal',
@@ -23,6 +25,7 @@ class Pencairan extends Model
         'foto_rumah',
         'marketing',
         'marketing_id',
+        'status',
         'is_locked',
         'latitude',
         'longitude',
