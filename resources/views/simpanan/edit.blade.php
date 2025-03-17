@@ -5,6 +5,7 @@
         <x-slot name="content">
             <div class="container mt-4">
                 <x-alert-message></x-alert-message>
+                
                 <div class="card shadow">
                     <form class="form-submit" id="resetForm" method="POST" action="{{ route('simpanan.update', $simpanan->id) }}">
                         @csrf
@@ -51,7 +52,7 @@
                                     <label for="jenis_simpanan" class="form-label">Jenis Simpanan</label>
                                     <select class="form-control" id="jenis_simpanan" name="jenis_simpanan" required>
                                         <option value="Pokok" {{ $simpanan->jenis_simpanan === 'Pokok' ? 'selected' : '' }}>Pokok</option>
-                                        <option value="Simpanan" {{ $simpanan->jenis_simpanan === 'Simpanan' ? 'selected' : '' }}>Simpanan</option>
+                                        <option value="Wajib" {{ $simpanan->jenis_simpanan === 'Wajib' ? 'selected' : '' }}>Wajib</option>
                                         <option value="Sukarela" {{ $simpanan->jenis_simpanan === 'Sukarela' ? 'selected' : '' }}>Sukarela</option>
                                         <option value="Deposito" {{ $simpanan->jenis_simpanan === 'Deposito' ? 'selected' : '' }}>Deposito</option>
                                     </select>
@@ -81,7 +82,7 @@
             </div>
             <script src="{{ asset('js/pencairan/nominal.js') }}"></script>
             <script src="{{ asset('js/all/reset-form.js') }}"></script>
-            <script src="{{ asset('js/simpanan/search/tambah.js') }}"></script>
+            <script src="{{ asset('js/simpanan/search.js') }}"></script>
         </x-slot>
     </x-bar.navbar>
 @endsection

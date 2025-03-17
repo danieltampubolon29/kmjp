@@ -28,16 +28,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/search-anggota', [PencairanController::class, 'searchAnggota'])->name('search.anggota');
     Route::post('/pencairan/{id}/upload', [PencairanController::class, 'upload'])->name('pencairan.upload');
     Route::post('/pencairan/{id}/lock', [PencairanController::class, 'lock'])->name('pencairan.lock');
-    
+
     Route::resource('simpanan', SimpananController::class);
     Route::post('/simpanan/{id}/lock', [SimpananController::class, 'lock'])->name('simpanan.lock');
-    
+    Route::get('/get-simpanan-data', [SimpananController::class, 'getSimpananData'])->name('get.simpanan.data');
+
     Route::resource('angsuran', AngsuranController::class);
     Route::post('/angsuran/{id}/lock', [AngsuranController::class, 'lock'])->name('angsuran.lock');
     Route::get('/search-pencairan', [AngsuranController::class, 'searchPencairan'])->name('search.pencairan');
 
     Route::get('/progres', [ProgresController::class, 'progres'])->name('laporan.progres');
     Route::get('/progres/get-pencairan-data', [ProgresController::class, 'getPencairanData'])->name('progres.get-pencairan-data');
+    Route::get('/get-pencairan-data', [PencairanController::class, 'getPencairanData'])->name('get.pencairan.data');
 });
 
 require __DIR__ . '/auth.php';

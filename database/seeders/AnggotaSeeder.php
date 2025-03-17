@@ -23,6 +23,7 @@ class AnggotaSeeder extends Seeder
                 'tanggal_daftar' => $faker->date(),
                 'marketing_id' => rand(2,3), 
                 'is_locked' => $faker->boolean(),
+                'simpanan' => 0,
                 'foto_ktp' => null,
                 'foto_kk' => null,
                 'latitude' => $faker->latitude(),

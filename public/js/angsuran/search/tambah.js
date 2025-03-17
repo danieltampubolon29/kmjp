@@ -66,12 +66,12 @@ document.addEventListener('DOMContentLoaded', function () {
                             searchResults.appendChild(div);
                         });
                     } else {
-                        searchResults.innerHTML = '<div class="p-2">Tidak ada hasil ditemukan</div>';
+                        searchResults.innerHTML = '<div class="p-2 bg-light">Tidak ada hasil ditemukan</div>';
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    searchResults.innerHTML = '<div class="p-2">Terjadi kesalahan saat mencari</div>';
+                    searchResults.innerHTML = '<div class="p-2 bg-light">Terjadi kesalahan saat mencari</div>';
                 });
         } else {
             searchResults.style.display = 'none';

@@ -22,6 +22,7 @@ return new class extends Migration
         $table->date('tanggal_daftar');
         $table->foreignId('marketing_id')->constrained('users'); 
         $table->boolean('is_locked')->default(false);
+        $table->integer('simpanan')->default(0);
         $table->string('foto_ktp')->nullable(); 
         $table->string('foto_kk')->nullable();
         $table->string('latitude'); 

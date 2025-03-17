@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Anggota;
 use App\Models\Simpanan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\QueryException;
 
 class SimpananController extends Controller
 {
@@ -45,15 +48,28 @@ class SimpananController extends Controller
             'anggota_id' => 'required|exists:anggota,id',
             'tanggal_transaksi' => 'required|date',
             'jenis_transaksi' => 'required|in:Setor,Tarik',
-            'jenis_simpanan' => 'required|in:Pokok,Simpanan,Sukarela,Deposito',
+            'jenis_simpanan' => 'required|in:Pokok,Wajib,Sukarela,Deposito',
             'nominal' => 'required|integer|min:1',
         ]);
 
+        $anggota = Anggota::findOrFail($validatedData['anggota_id']);
+        if ($validatedData['jenis_transaksi'] === 'Tarik') {
+            // Pastikan nominal penarikan tidak melebihi saldo simpanan
+            if (($anggota->simpanan ?? 0) < $validatedData['nominal']) {
+                return redirect()->back()->with('error', 'Penarikan gagal! Jumlah penarikan melebihi saldo simpanan.');
+            }
+        }
+
+        if ($validatedData['jenis_transaksi'] === 'Setor') {
+            $anggota->simpanan = ($anggota->simpanan ?? 0) + $validatedData['nominal'];
+        } elseif ($validatedData['jenis_transaksi'] === 'Tarik') {
+            $anggota->simpanan = ($anggota->simpanan ?? 0) - $validatedData['nominal'];
+        }
+
+        $anggota->save();
         $validatedData['marketing_id'] = Auth::id();
         $validatedData['pencairan_id'] = null;
-
         Simpanan::create($validatedData);
-
         return redirect()->route('simpanan.index')->with('success', 'Data simpanan berhasil ditambahkan.');
     }
 
@@ -61,7 +77,6 @@ class SimpananController extends Controller
     public function show($id)
     {
         $simpanan = Simpanan::findOrFail($id);
-
         if (Auth::user()->role === 'marketing') {
             if ($simpanan->marketing_id !== Auth::id()) {
                 return redirect()->route('simpanan.index')->with('error', 'Anda tidak memiliki akses ke data ini.');
@@ -78,58 +93,82 @@ class SimpananController extends Controller
     }
 
 
+
+
     public function update(Request $request, $id)
-{
-    $simpanan = Simpanan::findOrFail($id);
+    {
+        $simpanan = Simpanan::findOrFail($id);
+        $validatedData = $request->validate([
+            'anggota_id' => 'required|exists:anggota,id',
+            'tanggal_transaksi' => 'required|date',
+            'jenis_transaksi' => 'required|in:Setor,Tarik',
+            'jenis_simpanan' => 'required|in:Pokok,Wajib,Sukarela,Deposito',
+            'nominal' => 'required|integer|min:1',
+        ]);
+        $anggotaLama = Anggota::findOrFail($simpanan->anggota_id);
+        $nominalLama = $simpanan->nominal;
+        if ($simpanan->jenis_transaksi === 'Setor') {
+            $anggotaLama->simpanan = ($anggotaLama->simpanan ?? 0) - $nominalLama;
+        } elseif ($simpanan->jenis_transaksi === 'Tarik') {
+            $anggotaLama->simpanan = ($anggotaLama->simpanan ?? 0) + $nominalLama;
+        }
+        $anggotaLama->save();
+        $anggotaBaru = Anggota::findOrFail($validatedData['anggota_id']);
+        if ($validatedData['jenis_transaksi'] === 'Tarik') {
+            if (($anggotaBaru->simpanan ?? 0) < $validatedData['nominal']) {
+                $anggotaLama->simpanan = ($anggotaLama->simpanan ?? 0) + $nominalLama;
+                $anggotaLama->save();
+                return redirect()->back()->with('error', 'Penarikan gagal! Jumlah penarikan melebihi saldo simpanan.');
+            }
+        }
+        if ($validatedData['jenis_transaksi'] === 'Setor') {
+            $anggotaBaru->simpanan = ($anggotaBaru->simpanan ?? 0) + $validatedData['nominal'];
+        } elseif ($validatedData['jenis_transaksi'] === 'Tarik') {
+            $anggotaBaru->simpanan = ($anggotaBaru->simpanan ?? 0) - $validatedData['nominal'];
+        }
+        $anggotaBaru->save();
+        $simpanan->update($validatedData);
+        return redirect()->route('simpanan.show', ['simpanan' => $simpanan->id])->with('success', 'Data simpanan berhasil diperbarui.');
+    }
 
-    $validatedData = $request->validate([
-        'anggota_id' => 'required|exists:anggota,id',
-        'tanggal_transaksi' => 'required|date',
-        'jenis_transaksi' => 'required|in:Setor,Tarik',
-        'jenis_simpanan' => 'required|in:Pokok,Simpanan,Sukarela,Deposito',
-        'nominal' => 'required|integer|min:1',
-    ]);
 
-    $simpanan->update($validatedData);
-
-    return redirect()->route('simpanan.show', ['simpanan' => $simpanan->id])->with('success', 'Data simpanan berhasil diperbarui.');
-}
 
 
     public function destroy($id)
     {
         $simpanan = Simpanan::findOrFail($id);
-
         if ($simpanan->pencairan_id !== null) {
             if (Auth::user()->role !== 'admin') {
                 return redirect()->route('simpanan.show', ['simpanan' => $simpanan->id])
                     ->with('error', 'Hanya admin yang dapat menghapus data simpanan dari pencairan ini');
             }
         }
-
+        $anggota = Anggota::findOrFail($simpanan->anggota_id);
+        if ($simpanan->jenis_transaksi === 'Setor') {
+            $anggota->simpanan = ($anggota->simpanan ?? 0) - $simpanan->nominal;
+        } elseif ($simpanan->jenis_transaksi === 'Tarik') {
+            $anggota->simpanan = ($anggota->simpanan ?? 0) + $simpanan->nominal;
+        }
+        $anggota->save();
         $simpanan->delete();
-
         return redirect()->route('simpanan.index')->with('success', 'Data simpanan berhasil dihapus.');
     }
 
     public function searchAnggota(Request $request)
     {
         $query = $request->input('q');
-
         $anggotas = Anggota::where('marketing_id', Auth::id())
             ->where(function ($q) use ($query) {
                 $q->where('nama', 'LIKE', "%$query%")
                     ->orWhere('no_anggota', 'LIKE', "%$query%");
             })
             ->get(['id', 'no_anggota', 'nama']);
-
         return response()->json($anggotas);
     }
 
     public function lock($id)
     {
         $simpanan = Simpanan::findOrFail($id);
-
         if ($simpanan->is_locked) {
             $simpanan->update(['is_locked' => false]);
             $message = 'Data simpanan berhasil dibuka.';
@@ -138,5 +177,35 @@ class SimpananController extends Controller
             $message = 'Data simpanan berhasil dikunci.';
         }
         return redirect()->route('simpanan.show', ['simpanan' => $simpanan->id])->with('success', $message);
+    }
+
+    public function getSimpananData(Request $request)
+    {
+        $anggotaId = $request->input('anggota_id');
+        if (!$anggotaId) {
+            return response()->json(['error' => 'ID Anggota tidak ditemukan'], 400);
+        }
+        $simpanan = [
+            'pokok' => $this->calculateSimpanan($anggotaId, 'pokok'),
+            'wajib' => $this->calculateSimpanan($anggotaId, 'wajib'),
+            'sukarela' => $this->calculateSimpanan($anggotaId, 'sukarela'),
+            'deposito' => $this->calculateSimpanan($anggotaId, 'deposito'),
+        ];
+        return response()->json($simpanan);
+    }
+
+    private function calculateSimpanan($anggotaId, $jenisSimpanan)
+    {
+        $totalSetor = Simpanan::where('anggota_id', $anggotaId)
+            ->where('jenis_simpanan', $jenisSimpanan)
+            ->where('jenis_transaksi', 'setor')
+            ->sum('nominal');
+
+        $totalTarik = Simpanan::where('anggota_id', $anggotaId)
+            ->where('jenis_simpanan', $jenisSimpanan)
+            ->where('jenis_transaksi', 'tarik')
+            ->sum('nominal');
+
+        return $totalSetor - $totalTarik;
     }
 }

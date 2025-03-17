@@ -50,7 +50,7 @@
                                     <label for="jenis_simpanan" class="form-label">Jenis Simpanan</label>
                                     <select class="form-control" id="jenis_simpanan" name="jenis_simpanan" required>
                                         <option value="Pokok">Pokok</option>
-                                        <option value="Simpanan">Simpanan</option>
+                                        <option value="Wajib">Wajib</option>
                                         <option value="Sukarela">Sukarela</option>
                                         <option value="Deposito">Deposito</option>
                                     </select>
@@ -80,7 +80,7 @@
             </div>
             <script src="{{ asset('js/pencairan/nominal.js') }}"></script>
             <script src="{{ asset('js/all/reset-form.js') }}"></script>
-            <script src="{{ asset('js/simpanan/search/tambah.js') }}"></script>
+            <script src="{{ asset('js/simpanan/search.js') }}"></script>
         </x-slot>
     </x-bar.navbar>
 @endsection

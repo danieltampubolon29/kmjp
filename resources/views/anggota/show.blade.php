@@ -53,6 +53,10 @@
                                         <p>{{ \Carbon\Carbon::parse($anggota->tanggal_daftar)->translatedFormat('d F Y') }}
                                         </p>
                                     </div>
+                                    <div class="col-md-6">
+                                        <p class="mb-1"><strong>Simpanan</strong></p>
+                                        <p>Rp. {{ number_format($anggota->simpanan, 0, ',', '.') }}</p>
+                                    </div>
                                 </div>
 
                                 <div class="mt-4">
