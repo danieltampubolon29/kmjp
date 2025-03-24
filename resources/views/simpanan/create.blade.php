@@ -23,7 +23,7 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="tanggal_transaksi" class="form-label">Tanggal Transaksi</label>
                                     <input type="date" class="form-control" id="tanggal_transaksi"
-                                        name="tanggal_transaksi" required>
+                                        name="tanggal_transaksi" value="{{ date('Y-m-d') }}" required>
                                 </div>
                             </div>
                             <input type="hidden" name="anggota_id" id="anggota_id">
@@ -42,8 +42,8 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="jenis_transaksi" class="form-label">Jenis Transaksi</label>
                                     <select class="form-control" id="jenis_transaksi" name="jenis_transaksi" required>
-                                        <option value="Setor">Setor</option>
                                         <option value="Tarik">Tarik</option>
+                                        <option value="Setor">Setor</option>
                                     </select>
                                 </div>
                                 <div class="col-md-6 mb-3">

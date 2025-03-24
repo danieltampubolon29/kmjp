@@ -48,15 +48,24 @@
             <li class="sidebar-menu-item has-dropdown">
                 <a href="#">
                     <i class="ri-window-line sidebar-menu-item-icon"></i>
-                    Laporan
+                    Progres
                     <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
                 </a>
                 <ul class="sidebar-dropdown-menu">
                     <li class="sidebar-dropdown-menu-item">
                         <a href="{{ route('laporan.progres') }}">
-                            Progres
+                            Rekap Data
                         </a>
                     </li>
+                </ul>
+            </li>
+            <li class="sidebar-menu-item has-dropdown">
+                <a href="#">
+                    <i class="ri-window-line sidebar-menu-item-icon"></i>
+                    Laporan
+                    <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
+                </a>
+                <ul class="sidebar-dropdown-menu">
                     <li class="sidebar-dropdown-menu-item">
                         <a href="#">
                             Laporan Angsuran
@@ -64,7 +73,12 @@
                     </li>
                     <li class="sidebar-dropdown-menu-item">
                         <a href="#">
-                            Tables
+                            Laporan Pencairan
+                        </a>
+                    </li>
+                    <li class="sidebar-dropdown-menu-item">
+                        <a href="#">
+                            Laporan Harian
                         </a>
                     </li>
                 </ul>

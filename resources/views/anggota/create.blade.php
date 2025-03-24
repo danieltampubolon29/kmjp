@@ -58,9 +58,10 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="tanggal_daftar" class="form-label">Tanggal Daftar</label>
                                     <input type="date" class="form-control" id="tanggal_daftar" name="tanggal_daftar"
-                                        value="{{ old('tanggal_daftar') }}" required>
+                                        value="{{ old('tanggal_daftar', date('Y-m-d')) }}" required>
                                 </div>
                             </div>
+                            
 
                             <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude') }}" required
                                 readonly>

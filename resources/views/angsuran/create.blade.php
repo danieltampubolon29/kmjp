@@ -29,7 +29,7 @@
                                 </div>
                                 
                             </div>
-                            <input type="text" name="pencairan_id" id="pencairan_id">
+                            <input type="hidden" name="pencairan_id" id="pencairan_id">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="angsuran_ke" class="form-label">Angsuran Ke</label>
@@ -79,8 +79,8 @@
                                     <input type="text"  id="sisa_kredit" class=" text-danger form-control" readonly>
                                 </div>
                             </div>
-                            <input type="text" name="latitude" id="latitude">
-                            <input type="text" name="longitude" id="longitude">
+                            <input type="hidden" name="latitude" id="latitude">
+                            <input type="hidden" name="longitude" id="longitude">
                         </div>
                         <div class="card-footer bg-light d-flex justify-content-end">
                             <a href="{{ route('pencairan.index') }}" class="btn btn-secondary me-2">

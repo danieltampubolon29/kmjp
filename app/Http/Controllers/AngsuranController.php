@@ -10,6 +10,12 @@ use Illuminate\Support\Facades\Auth;
 class AngsuranController extends Controller
 {
 
+    public function getAngsuranData($pencairanId)
+    {
+        $angsuran = Angsuran::where('pencairan_id', $pencairanId)->get();
+        return response()->json($angsuran);
+    }
+
     public function index(Request $request)
     {
         $search = $request->input('search');
@@ -151,7 +157,7 @@ class AngsuranController extends Controller
         $newSisaKredit = $pencairan->sisa_kredit + $angsuran->nominal;
         $pencairan->update([
             'sisa_kredit' => $newSisaKredit,
-            'status' => $newSisaKredit > 0 ? false : true, 
+            'status' => $newSisaKredit > 0 ? false : true,
         ]);
 
         $angsuran->delete();
@@ -184,8 +190,14 @@ class AngsuranController extends Controller
                     ->orWhere('no_anggota', 'LIKE', "%$query%");
             })
             ->get([
-                'id','no_anggota','nama','pinjaman_ke',
-                'produk','tenor','sisa_kredit','nominal'
+                'id',
+                'no_anggota',
+                'nama',
+                'pinjaman_ke',
+                'produk',
+                'tenor',
+                'sisa_kredit',
+                'nominal'
             ]);
 
         $pencairans->transform(function ($pencairan) use ($angsuranId) {
@@ -205,7 +217,7 @@ class AngsuranController extends Controller
             if ($angsuranId) {
                 $currentAngsuran = Angsuran::find($angsuranId);
                 if ($currentAngsuran && $currentAngsuran->pencairan_id == $pencairan->id) {
-                    $angsuranKe = $currentAngsuran->angsuran_ke; 
+                    $angsuranKe = $currentAngsuran->angsuran_ke;
                 }
             }
 

@@ -5,13 +5,33 @@ namespace App\Http\Controllers;
 use App\Models\Anggota;
 use App\Models\Simpanan;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\QueryException;
 
 class SimpananController extends Controller
 {
+
+    public function getTransactions(Request $request)
+    {
+        $type = $request->query('type');
+        $anggotaId = $request->query('anggota_id');
+
+        if (!in_array($type, ['POKOK', 'WAJIB', 'SUKARELA', 'DEPOSITO'])) {
+            return response()->json(['error' => 'Jenis simpanan tidak valid'], 400);
+        }
+
+        if (!$anggotaId) {
+            return response()->json(['error' => 'ID Anggota diperlukan'], 400);
+        }
+
+        // Ambil data simpanan berdasarkan anggota dan jenis simpanan
+        $transactions = Simpanan::where('jenis_simpanan', $type)
+            ->where('anggota_id', $anggotaId)
+            ->orderBy('tanggal_transaksi', 'desc')
+            ->get();
+
+        return response()->json($transactions);
+    }
+
 
     public function index(Request $request)
     {
@@ -207,5 +227,14 @@ class SimpananController extends Controller
             ->sum('nominal');
 
         return $totalSetor - $totalTarik;
+    }
+
+    public function getAllSimpanan($anggotaId)
+    {
+        $simpanan = Simpanan::where('anggota_id', $anggotaId)
+            ->orderBy('tanggal_simpanan', 'asc')
+            ->get();
+
+        return response()->json($simpanan);
     }
 }

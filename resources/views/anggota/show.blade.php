@@ -112,7 +112,6 @@
                         </div>
                     </div>
 
-                    <!-- Image Card -->
                     <div class="col-md-3 mb-5">
                         <div class="card shadow">
                             <div class="card-header bg-primary d-flex justify-content-between align-items-center">

@@ -1,6 +1,8 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Request;
 use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProgresController;
@@ -32,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('simpanan', SimpananController::class);
     Route::post('/simpanan/{id}/lock', [SimpananController::class, 'lock'])->name('simpanan.lock');
     Route::get('/get-simpanan-data', [SimpananController::class, 'getSimpananData'])->name('get.simpanan.data');
+    Route::get('/get-simpanan-transactions', [SimpananController::class, 'getTransactions']);
 
     Route::resource('angsuran', AngsuranController::class);
     Route::post('/angsuran/{id}/lock', [AngsuranController::class, 'lock'])->name('angsuran.lock');
@@ -50,3 +53,5 @@ Route::middleware('auth', 'MarketingMiddleware')->group(function () {
 Route::middleware('auth', 'AdminMiddleware')->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 });
+
+Route::get('/get-angsuran-data/{pencairanId}', [AngsuranController::class, 'getAngsuranData']);

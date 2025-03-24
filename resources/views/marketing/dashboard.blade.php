@@ -2,56 +2,7 @@
 @section('title', 'Dashboard')
 @section('content')
     <x-bar.navbar> Dashboard
-        <style>
-            .simpanan-value {
-                font-size: 0.9rem;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            @media (max-width: 768px) {
-                .simpanan-value {
-                    font-size: 0.7rem;
-                }
-            }
-
-            .data-row {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 0.5rem;
-            }
-
-            .data-label {
-                font-weight: bold;
-            }
-
-            .data-value {
-                text-align: right;
-            }
-
-            .pinjaman-table {
-                table-layout: fixed;
-                width: 100%;
-            }
-
-            .pinjaman-table th,
-            .pinjaman-table td {
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                font-size: 0.9rem;
-            }
-
-            @media (max-width: 768px) {
-
-                .pinjaman-table th,
-                .pinjaman-table td {
-                    font-size: 0.7rem;
-                }
-            }
-        </style>
+        <link rel="stylesheet" href="{{ asset('css/dashboard/marketing.css') }}">
         <x-slot name="content">
             <div class="container mt-4">
                 <div class="card">
@@ -59,11 +10,11 @@
                         <h5 class="card-title mt-2 text-light">CEK DATA</h5>
                         <form action="" method="" class="d-flex position-relative">
                             <div class="input-group">
-                                <input type="text" id="searchInput" name="search" class="form-control"
-                                    placeholder="Cari Anggota" />
+                                <input type="text" id="searchInput" name="search" class="form-control" placeholder="Cari Anggota" />
                             </div>
                             <ul id="searchResults" class="list-group position-absolute w-100"
-                                style="z-index: 1000; display: none;"></ul>
+                                style="z-index: 1000; display: none; max-height: 355px; overflow-y: auto;">
+                            </ul>
                         </form>
                     </div>
                     <div class="card-body">
@@ -123,8 +74,9 @@
                     </div>
                 </div>
             </div>
-            <script src="{{ asset('js/all/reset-form.js') }}"></script>
-            <script src="{{ asset('js/dashboard/marketing.js') }}"></script>
+            @include('marketing.modal')
+            <script src="{{ asset('js/dashboard/marketing/cek-data.js') }}"></script>
+            <script src="{{ asset('js/dashboard/marketing/reset.js') }}"></script>
         </x-slot>
     </x-bar.navbar>
 @endsection

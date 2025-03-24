@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Anggota;
+use App\Models\Angsuran;
 use App\Models\Simpanan;
 use App\Models\Pencairan;
 use Illuminate\Http\Request;
@@ -293,4 +294,6 @@ class PencairanController extends Controller
 
         return response()->json($pencairan);
     }
+
+    
 }

@@ -71,7 +71,7 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="tanggal_pencairan" class="form-label">Tanggal Pencairan</label>
                                     <input type="date" id="tanggal_pencairan" name="tanggal_pencairan"
-                                        class="form-control" required>
+                                        class="form-control" value="{{ date('Y-m-d') }}" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="marketing" class="form-label">Marketing</label>
