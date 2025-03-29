@@ -1,9 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Request;
 use App\Http\Controllers\AnggotaController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProgresController;
 use App\Http\Controllers\AngsuranController;
@@ -21,28 +20,47 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    // route anggota
     Route::resource('anggota', AnggotaController::class);
     Route::post('/anggota/{id}/upload', [AnggotaController::class, 'upload'])->name('anggota.upload');
     Route::post('/anggota/{id}/lock', [AnggotaController::class, 'lock'])->name('anggota.lock');
 
+    // route pencairan
     Route::resource('pencairan', PencairanController::class);
     Route::get('/get-pinjaman-ke/{anggotaId}', [PencairanController::class, 'getPinjamanKe'])->name('get.pinjaman.ke');
     Route::get('/search-anggota', [PencairanController::class, 'searchAnggota'])->name('search.anggota');
     Route::post('/pencairan/{id}/upload', [PencairanController::class, 'upload'])->name('pencairan.upload');
     Route::post('/pencairan/{id}/lock', [PencairanController::class, 'lock'])->name('pencairan.lock');
 
+    // route simpanan
     Route::resource('simpanan', SimpananController::class);
     Route::post('/simpanan/{id}/lock', [SimpananController::class, 'lock'])->name('simpanan.lock');
-    Route::get('/get-simpanan-data', [SimpananController::class, 'getSimpananData'])->name('get.simpanan.data');
-    Route::get('/get-simpanan-transactions', [SimpananController::class, 'getTransactions']);
 
+    // route angsuran
     Route::resource('angsuran', AngsuranController::class);
     Route::post('/angsuran/{id}/lock', [AngsuranController::class, 'lock'])->name('angsuran.lock');
     Route::get('/search-pencairan', [AngsuranController::class, 'searchPencairan'])->name('search.pencairan');
 
-    Route::get('/progres', [ProgresController::class, 'progres'])->name('laporan.progres');
-    Route::get('/progres/get-pencairan-data', [ProgresController::class, 'getPencairanData'])->name('progres.get-pencairan-data');
+    // route rekap data marketing
+    Route::get('/rekap-data', [ProgresController::class, 'rekapData'])->name('progres.rekap-data');
+    Route::get('/rekap-data/get-pencairan-data', [ProgresController::class, 'getPencairanData'])->name('progres.get-pencairan-data');
+
+    // route dashboard marketing cek data
+    Route::get('/get-simpanan-data', [SimpananController::class, 'getSimpananData'])->name('get.simpanan.data');
+    Route::get('/get-simpanan-transactions', [SimpananController::class, 'getTransactions']);
     Route::get('/get-pencairan-data', [PencairanController::class, 'getPencairanData'])->name('get.pencairan.data');
+
+    // route laporan
+
+        // angsuran 
+    Route::get('/laporan-angsuran', [LaporanController::class, 'angsuran'])->name('laporan.angsuran');
+        
+        // pencairan
+    Route::get('/laporan-pencairan', [LaporanController::class, 'pencairan'])->name('laporan.pencairan');
+    Route::post('/laporan/get-pencairan-by-date', [LaporanController::class, 'getPencairanByDate']);
+
+        // harian
+    Route::get('/laporan-harian', [LaporanController::class, 'harian'])->name('laporan.harian');
 });
 
 require __DIR__ . '/auth.php';

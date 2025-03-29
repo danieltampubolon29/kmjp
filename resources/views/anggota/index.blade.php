@@ -24,10 +24,10 @@
                         <div class="table-responsive">
                             <table class="table table-light table-striped table-hover text-center">
                                 <thead>
-                                    <tr>
-                                        <th class="table-dark text-center align-middle">NO</th>
-                                        <th class="table-dark text-center align-middle">NO ANGGOTA</th>
-                                        <th class="table-dark text-center align-middle">NAMA</th>
+                                    <tr class="table-dark text-center align-middle">
+                                        <th>NO</th>
+                                        <th>NO ANGGOTA</th>
+                                        <th>NAMA</th>
                                     </tr>
                                 </thead>
                                 <tbody>

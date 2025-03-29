@@ -8,7 +8,8 @@
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Daftar Pencairan</h5>
                         <div>
-                            <a href="{{ route('pencairan.create') }}" class="btn btn-light"><i class="ri-hand-coin-line"></i></i></a>
+                            <a href="{{ route('pencairan.create') }}" class="btn btn-light"><i
+                                    class="ri-hand-coin-line"></i></i></a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -24,13 +25,13 @@
                         <div class="table-responsive">
                             <table class="table table-light table-striped table-hover text-center">
                                 <thead>
-                                    <tr>
-                                        <th class="table-dark text-center align-middle">NO</th>
-                                        <th class="table-dark text-center align-middle">NO ANGGOTA</th>
-                                        <th class="table-dark text-center align-middle">NAMA</th>
-                                        <th class="table-dark text-center align-middle">TANGGAL</th>
-                                        <th class="table-dark text-center align-middle">NOMINAL</th>
-                                        <th class="table-dark text-center align-middle">STATUS</th>
+                                    <tr class="table-dark text-center align-middle">
+                                        <th>NO</th>
+                                        <th>NO ANGGOTA</th>
+                                        <th>NAMA</th>
+                                        <th>TANGGAL</th>
+                                        <th>NOMINAL</th>
+                                        <th>STATUS</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -42,10 +43,11 @@
                                             <td>{{ $pencairan->tanggal_pencairan }}</td>
                                             <td>Rp. {{ number_format($pencairan->nominal, 0, ',', '.') }},-</td>
                                             <td>
-                                                @if($pencairan->status == 1)
-                                                    <button class="btn btn-success btn-sm text-light fw-bold" >Lunas</button>
+                                                @if ($pencairan->status == 1)
+                                                    <button class="btn btn-success btn-sm text-light fw-bold">Lunas</button>
                                                 @elseif($pencairan->status == 0)
-                                                    <button class="btn btn-warning btn-sm text-light fw-bold" >Proses</button>
+                                                    <button
+                                                        class="btn btn-warning btn-sm text-light fw-bold">Proses</button>
                                                 @endif
                                             </td>
                                         </tr>
@@ -53,7 +55,7 @@
                                 </tbody>
                             </table>
                         </div>
-                            {{ $pencairans->appends(['search' => $search ?? ''])->links('pagination::bootstrap-5') }}
+                        {{ $pencairans->appends(['search' => $search ?? ''])->links('pagination::bootstrap-5') }}
                     </div>
                 </div>
             </div>

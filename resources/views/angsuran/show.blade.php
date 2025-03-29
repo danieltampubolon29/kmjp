@@ -56,8 +56,8 @@
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-md-6">
-                                        <p class="mb-1"><strong>Tanggal Pencairan</strong></p>
-                                        <p>{{ \Carbon\Carbon::parse($angsuran->tanggal_pencairan)->translatedFormat('d F Y') }}
+                                        <p class="mb-1"><strong>Tanggal Angsuran</strong></p>
+                                        <p>{{ \Carbon\Carbon::parse($angsuran->tanggal_angsuran)->translatedFormat('d F Y') }}
                                         </p>
                                     </div>
                                     <div class="col-md-6">

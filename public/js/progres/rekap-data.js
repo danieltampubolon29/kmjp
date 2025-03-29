@@ -16,7 +16,7 @@
                         return;
                     }
 
-                    fetch(`/progres/get-pencairan-data?month=${month}&year=${year}`)
+                    fetch(`/rekap-data/get-pencairan-data?month=${month}&year=${year}`)
                         .then(response => {
                             if (!response.ok) {
                                 throw new Error(`HTTP error! Status: ${response.status}`);

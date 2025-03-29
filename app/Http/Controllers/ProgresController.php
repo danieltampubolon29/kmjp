@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\Auth;
 
 class ProgresController extends Controller
 {
-    public function progres()
+    public function rekapData()
     {
-        return view('laporan.progres');
+        return view('progres.rekap-data');
     }
 
     public function getPencairanData(Request $request)

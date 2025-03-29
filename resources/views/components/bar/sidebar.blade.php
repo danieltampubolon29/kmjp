@@ -53,7 +53,7 @@
                 </a>
                 <ul class="sidebar-dropdown-menu">
                     <li class="sidebar-dropdown-menu-item">
-                        <a href="{{ route('laporan.progres') }}">
+                        <a href="{{ route('progres.rekap-data') }}">
                             Rekap Data
                         </a>
                     </li>
@@ -67,17 +67,17 @@
                 </a>
                 <ul class="sidebar-dropdown-menu">
                     <li class="sidebar-dropdown-menu-item">
-                        <a href="#">
+                        <a href="{{ route('laporan.angsuran') }}">
                             Laporan Angsuran
                         </a>
                     </li>
                     <li class="sidebar-dropdown-menu-item">
-                        <a href="#">
+                        <a href="{{ route('laporan.pencairan') }}">
                             Laporan Pencairan
                         </a>
                     </li>
                     <li class="sidebar-dropdown-menu-item">
-                        <a href="#">
+                        <a href="{{ route('laporan.harian') }}">
                             Laporan Harian
                         </a>
                     </li>

@@ -1,7 +1,7 @@
 @extends('layouts.aplication')
 @section('title', 'Progres')
 @section('content')
-    <x-bar.navbar>Halaman Progres
+    <x-bar.navbar>Rekap Data
         <x-slot name="content">
             <div class="py-4 px-3">
                 <div class="row d-flex align-items-stretch">
@@ -98,7 +98,7 @@
                 </div>
             </div>
             <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-            <script src="{{ asset('js/laporan/progres.js') }}"></script>
+            <script src="{{ asset('js/progres/rekap-data.js') }}"></script>
         </x-slot>
     </x-bar.navbar>
 @endsection

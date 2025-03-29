@@ -246,7 +246,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                                 } else {
                                                     const noDataRow = document.createElement('tr');
                                                     noDataRow.innerHTML = `
-                                                        <td colspan="4" class="text-center">Tidak ada data angsuran</td>
+                                                        <td colspan="3" class="text-center">Tidak ada data angsuran</td>
                                                     `;
                                                     angsuranTableBody.appendChild(noDataRow);
                                                 }

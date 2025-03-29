@@ -15,43 +15,49 @@ class PencairanSeeder extends Seeder
     {
         $faker = Faker::create(); 
 
-        $anggotas = Anggota::pluck('id')->toArray();
-
+        // Ambil daftar anggota dan marketing yang tersedia
+        $anggotas = Anggota::all(['id', 'no_anggota', 'nama'])->toArray();
         $users = User::where('role', 'marketing')->pluck('id')->toArray();
 
         if (empty($anggotas) || empty($users)) {
             return;
         }
 
-        for ($i = 1; $i <= 5; $i++) { 
-            $anggotaId = $faker->randomElement($anggotas); 
-            $marketingId = $faker->randomElement($users); 
+        for ($i = 1; $i <= 100; $i++) { 
+            // Pilih anggota secara acak
+            $anggota = $faker->randomElement($anggotas);
+            $marketingId = $faker->randomElement($users);
 
-            $lastPinjaman = Pencairan::where('anggota_id', $anggotaId)
+            // Ambil pinjaman terakhir untuk menentukan pinjaman_ke
+            $lastPinjaman = Pencairan::where('anggota_id', $anggota['id'])
                 ->orderBy('pinjaman_ke', 'desc')
                 ->first();
 
             $pinjamanKe = $lastPinjaman ? $lastPinjaman->pinjaman_ke + 1 : 1;
 
-            $nominal = $faker->numberBetween(500000, 5000000); 
-            $sisa_kredit = $nominal + $nominal * 0.2;
+            // Tentukan nominal dan sisa kredit
+            $nominal = $faker->numberBetween(500000, 5000000);
+            $sisa_kredit = (int) ($nominal * 1.2);
 
             DB::table('pencairan')->insert([
-                'anggota_id' => $anggotaId,
+                'anggota_id' => $anggota['id'],
+                'no_anggota' => $anggota['no_anggota'],
+                'nama' => $anggota['nama'],
                 'pinjaman_ke' => $pinjamanKe,
                 'produk' => $faker->randomElement(['Harian', 'Mingguan']), 
                 'nominal' => $nominal,
                 'tenor' => $faker->numberBetween(1, 52), 
                 'jatuh_tempo' => $faker->randomElement(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Harian']),
                 'sisa_kredit' => $sisa_kredit,
-                'tanggal_pencairan' => $faker->dateTimeBetween('-1 year', 'now')->format('Y-m-d'), 
+                'tanggal_pencairan' => now()->format('Y-m-d'),
                 'foto_pencairan' => null, 
                 'foto_rumah' => null, 
-                'marketing' => $faker->randomElement(['Hitler', 'Jubrito', 'Hendri']),
+                'marketing' => User::find($marketingId)->name ?? 'Unknown', // Ambil nama marketing
                 'marketing_id' => $marketingId,
-                'is_locked' => $faker->boolean(), 
-                'latitude' => $faker->latitude(-90, 90), 
-                'longitude' => $faker->longitude(-180, 180), 
+                'status' => false, // Sesuai migration
+                'is_locked' => false, // Default value sesuai migration
+                'latitude' => (string) $faker->latitude(-90, 90), 
+                'longitude' => (string) $faker->longitude(-180, 180), 
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);

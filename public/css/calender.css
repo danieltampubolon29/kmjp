@@ -1,0 +1,266 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+:root {
+    --primary-color: var(--bs-primary);
+}
+
+.modal-dialog {
+    max-width: 500px;
+    width: 100%;
+}
+
+.modal-content {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.modal-body {
+    padding: 0 !important;
+}
+
+.wrapper {
+    width: 100%;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+.wrapper header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    justify-content: space-between;
+    background: var(--primary-color);
+    color: white;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+header .icons {
+    display: flex;
+}
+
+header .icons span {
+    height: 38px;
+    width: 38px;
+    cursor: pointer;
+    color: white;
+    text-align: center;
+    line-height: 38px;
+    font-size: 1.9rem;
+    user-select: none;
+    border-radius: 50%;
+}
+
+header .icons span:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+header .current-date {
+    font-size: 1.45rem;
+    font-weight: 500;
+}
+
+.calendar {
+    padding: 20px;
+}
+
+.calendar ul {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    text-align: center;
+}
+
+.calendar .days {
+    margin-bottom: 20px;
+}
+
+.calendar li {
+    color: #333;
+    width: calc(100% / 7);
+    font-size: 1.1rem;
+}
+
+.calendar .weeks li {
+    font-weight: 600;
+    cursor: default;
+}
+
+.calendar .days li {
+    z-index: 1;
+    cursor: pointer;
+    position: relative;
+    margin-top: 30px;
+}
+
+.days li.inactive {
+    color: #aaa;
+}
+
+.days li.active {
+    color: #fff;
+}
+
+.days li::before {
+    position: absolute;
+    content: "";
+    left: 50%;
+    top: 50%;
+    height: 40px;
+    width: 40px;
+    z-index: -1;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.days li.active::before {
+    background: var(--primary-color);
+}
+
+.days li:not(.active):hover::before {
+    background: #f2f2f2;
+}
+
+#dynamicTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#dynamicTable tbody tr {
+    height: 40px; 
+}
+
+#dynamicTable td {
+    min-height: 40px; 
+    padding: 8px;
+    text-align: center; 
+    vertical-align: middle;
+    border: 3px solid black;
+}
+
+#dynamicTable th {
+    background-color: #f2f2f2; 
+    padding: 8px; 
+    text-align: center; 
+    border: 3px solid black; 
+}
+
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.pagination .page-item {
+    margin: 0 5px;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    color: white;
+    border: 1px solid #007bff;
+}
+
+.pagination .page-link {
+    text-decoration: none;
+    color: #007bff;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+#dynamicTable,
+#dynamicTable th,
+#dynamicTable td,
+#dynamicTable tfoot {
+    border: 1px solid black !important;
+}
+
+#dynamicTable th,
+#dynamicTable td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+#dynamicTable tfoot td {
+    font-weight: bold;
+}
+
+#dynamicTable th,
+#dynamicTable td {
+    padding: 8px;
+}
+
+.card-header .btn {
+    font-size: 14px;
+    padding: 6px 12px;
+}
+
+.card-body h5 {
+    font-size: 25px;
+}
+
+.card-body .d-flex div {
+    font-size: 16px;
+}
+
+.signature-box {
+    height: 80px;
+}
+
+/* Responsive styles for mobile devices */
+@media (max-width: 768px) {
+    /* Adjust card header buttons */
+    .card-header .btn {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+
+    /* Ensure H5 stays in one line */
+    .card-body h5 {
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Ensure marketing, date, and day stay in one line */
+    .card-body .d-flex div {
+        font-size: 10px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Make table scrollable horizontally */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    }
+
+    #dynamicTable {
+        font-size: 10px;
+        width: auto; /* Allow table to expand beyond viewport */
+        min-width: 100%; /* Ensure table is at least as wide as the viewport */
+        table-layout: fixed; /* Maintain consistent column widths */
+    }
+
+    #dynamicTable th,
+    #dynamicTable td {
+        padding: 4px;
+        white-space: nowrap; /* Prevent text wrapping */
+        overflow: hidden;
+        text-overflow: ellipsis; /* Add ellipsis for overflowed text */
+    }
+
+    /* Adjust signature box */
+    .signature-box {
+        height: 60px;
+    }
+
+    /* Adjust footer button */
+    .card-footer .btn {
+        font-size: 12px;
+        padding: 4px 8px;
+    }
+}
