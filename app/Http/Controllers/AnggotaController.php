@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Anggota;
+use App\Models\Simpanan;
+use App\Models\Pencairan;
 use Illuminate\Http\Request;
 use PhpParser\Node\Stmt\TryCatch;
 use Illuminate\Support\Facades\Auth;
@@ -101,42 +103,50 @@ class AnggotaController extends Controller
 
 
     public function update(Request $request, $id)
-{
-    $anggota = Anggota::findOrFail($id);
+    {
+        $anggota = Anggota::findOrFail($id);
 
-    $validated = $request->validate([
-        'nama' => 'required|string|max:255',
-        'tanggal_lahir' => 'required|date',
-        'alamat_ktp' => 'required|string',
-        'alamat_domisili' => 'required|string',
-        'no_hp' => 'nullable|string', 
-        'tanggal_daftar' => 'required|date',
-    ], [
-        'nama.required' => 'Nama wajib diisi.',
-        'tanggal_lahir.required' => 'Tanggal lahir wajib diisi.',
-        'tanggal_lahir.date' => 'Format tanggal lahir tidak valid.',
-        'alamat_ktp.required' => 'Alamat KTP wajib diisi.',
-        'alamat_domisili.required' => 'Alamat domisili wajib diisi.',
-        'no_hp.string' => 'Nomor HP wajib diisi.',
-        'tanggal_daftar.required' => 'Tanggal daftar wajib diisi.',
-    ]);
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'tanggal_lahir' => 'required|date',
+            'alamat_ktp' => 'required|string',
+            'alamat_domisili' => 'required|string',
+            'no_hp' => 'nullable|string',
+            'tanggal_daftar' => 'required|date',
+        ], [
+            'nama.required' => 'Nama wajib diisi.',
+            'tanggal_lahir.required' => 'Tanggal lahir wajib diisi.',
+            'tanggal_lahir.date' => 'Format tanggal lahir tidak valid.',
+            'alamat_ktp.required' => 'Alamat KTP wajib diisi.',
+            'alamat_domisili.required' => 'Alamat domisili wajib diisi.',
+            'no_hp.string' => 'Nomor HP wajib diisi.',
+            'tanggal_daftar.required' => 'Tanggal daftar wajib diisi.',
+        ]);
 
-    try {
-        $anggota->update($validated);
+        try {
+            $anggota->update($validated);
 
-        return redirect()->route('anggota.show', ['anggotum' => $anggota->id])
-            ->with('success', 'Data anggota berhasil diperbarui.');
-    } catch (\Exception $e) {
-        return redirect()->route('anggota.show', ['anggotum' => $anggota->id])
-            ->withErrors(['error' => 'Terjadi kesalahan saat memperbarui data. Silakan coba lagi.'])
-            ->withInput();
+            return redirect()->route('anggota.show', ['anggotum' => $anggota->id])
+                ->with('success', 'Data anggota berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return redirect()->route('anggota.show', ['anggotum' => $anggota->id])
+                ->withErrors(['error' => 'Terjadi kesalahan saat memperbarui data. Silakan coba lagi.'])
+                ->withInput();
+        }
     }
-}
 
 
     public function destroy($id)
     {
         $anggota = Anggota::findOrFail($id);
+
+        $hasPencairan = Pencairan::where('anggota_id', $anggota->id)->exists();
+        $hasSimpanan = Simpanan::where('anggota_id', $anggota->id)->exists();
+
+        if ($hasPencairan || $hasSimpanan) {
+            return redirect()->route('anggota.show', ['anggotum' => $anggota->id])
+                ->withErrors(['error' => 'Terjadi kesalahan saat menghapus data. Karena data ini memiliki hubungan dengan data lain']);
+        }
         $fotoKtp = $anggota->foto_ktp;
         $fotoKk = $anggota->foto_kk;
 

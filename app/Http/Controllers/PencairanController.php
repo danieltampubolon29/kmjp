@@ -166,6 +166,13 @@ class PencairanController extends Controller
     {
         $pencairan = Pencairan::findOrFail($id);
 
+        $hasAngsuran = Angsuran::where('pencairan_id', $pencairan->id)->exists();
+
+        if ($hasAngsuran) {
+            return redirect()->route('pencairan.show', ['pencairan' => $pencairan->id])
+                ->withErrors(['error' => 'Tidak dapat menghapus data karena masih memiliki angsuran terkait.']);
+        }
+        
         $anggota = Anggota::findOrFail($pencairan->anggota_id);
         $simpananPokok = $pencairan->nominal * 0.05;
         $anggota->simpanan = ($anggota->simpanan ?? 0) - $simpananPokok;
@@ -226,7 +233,7 @@ class PencairanController extends Controller
             $fileNamePencairan = $pencairan->anggota->no_anggota . '-' . $pencairan->pinjaman_ke . '.' . $extensionPencairan;
 
             $filePencairan->storeAs('pencairan', $fileNamePencairan, 'public');
-            $pencairan->foto_pencairan = 'pencairan/' . $fileNamePencairan; 
+            $pencairan->foto_pencairan = 'pencairan/' . $fileNamePencairan;
             $uploaded = true;
         }
 
@@ -240,7 +247,7 @@ class PencairanController extends Controller
             $fileNameRumah = $pencairan->anggota->no_anggota . '-' . $pencairan->pinjaman_ke . '.' . $extensionRumah;
 
             $fileRumah->storeAs('rumah', $fileNameRumah, 'public');
-            $pencairan->foto_rumah = 'rumah/' . $fileNameRumah; 
+            $pencairan->foto_rumah = 'rumah/' . $fileNameRumah;
             $uploaded = true;
         }
 
@@ -294,6 +301,4 @@ class PencairanController extends Controller
 
         return response()->json($pencairan);
     }
-
-    
 }

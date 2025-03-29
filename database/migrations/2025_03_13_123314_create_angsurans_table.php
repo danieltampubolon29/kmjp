@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('angsuran', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('pencairan_id')->nullable(); 
+            $table->foreignId('pencairan_id')->constrained('pencairan'); 
             $table->integer('angsuran_ke'); 
             $table->string('jenis_transaksi');
             $table->integer('nominal')->unsigned(); 
