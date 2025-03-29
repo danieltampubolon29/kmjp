@@ -23,7 +23,6 @@ class SimpananController extends Controller
             return response()->json(['error' => 'ID Anggota diperlukan'], 400);
         }
 
-        // Ambil data simpanan berdasarkan anggota dan jenis simpanan
         $transactions = Simpanan::where('jenis_simpanan', $type)
             ->where('anggota_id', $anggotaId)
             ->orderBy('tanggal_transaksi', 'desc')
@@ -74,7 +73,6 @@ class SimpananController extends Controller
 
         $anggota = Anggota::findOrFail($validatedData['anggota_id']);
         if ($validatedData['jenis_transaksi'] === 'Tarik') {
-            // Pastikan nominal penarikan tidak melebihi saldo simpanan
             if (($anggota->simpanan ?? 0) < $validatedData['nominal']) {
                 return redirect()->back()->with('error', 'Penarikan gagal! Jumlah penarikan melebihi saldo simpanan.');
             }

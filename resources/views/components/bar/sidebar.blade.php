@@ -42,6 +42,11 @@
                             Angsuran
                         </a>
                     </li>
+                    <li class="sidebar-dropdown-menu-item">
+                        <a href="{{ route('kasbon.index') }}">
+                            Kasbon Marketing
+                        </a>
+                    </li>
                 </ul>
             </li>
             

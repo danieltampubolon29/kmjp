@@ -102,10 +102,8 @@ class AnggotaController extends Controller
 
     public function update(Request $request, $id)
 {
-    // Cari anggota berdasarkan ID
     $anggota = Anggota::findOrFail($id);
 
-    // Validasi input dari request
     $validated = $request->validate([
         'nama' => 'required|string|max:255',
         'tanggal_lahir' => 'required|date',
@@ -124,14 +122,11 @@ class AnggotaController extends Controller
     ]);
 
     try {
-        // Update data anggota
         $anggota->update($validated);
 
-        // Redirect ke halaman detail anggota dengan pesan sukses
         return redirect()->route('anggota.show', ['anggotum' => $anggota->id])
             ->with('success', 'Data anggota berhasil diperbarui.');
     } catch (\Exception $e) {
-        // Jika terjadi kesalahan, redirect kembali ke halaman detail anggota dengan pesan error
         return redirect()->route('anggota.show', ['anggotum' => $anggota->id])
             ->withErrors(['error' => 'Terjadi kesalahan saat memperbarui data. Silakan coba lagi.'])
             ->withInput();
@@ -145,7 +140,6 @@ class AnggotaController extends Controller
         $fotoKtp = $anggota->foto_ktp;
         $fotoKk = $anggota->foto_kk;
 
-        // Cek apakah file ada sebelum menghapusnya
         if ($fotoKtp && Storage::disk('public')->exists($fotoKtp)) {
             Storage::disk('public')->delete($fotoKtp);
         }
