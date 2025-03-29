@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Angsuran;
 use App\Models\Simpanan;
 use App\Models\Pencairan;
 use Illuminate\Http\Request;
@@ -49,6 +50,43 @@ class LaporanController extends Controller
                 'simpanan' => $simpanan > 0 ? $simpanan : "-",
             ];
         });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $data,
+        ]);
+    }
+
+    public function getAngsuranByDate(Request $request)
+    {
+        $request->validate([
+            'tanggal_angsuran' => 'required|date',
+        ]);
+
+        $tanggalAngsuran = $request->input('tanggal_angsuran');
+
+        $data = Angsuran::with('pencairan')
+            ->where('tanggal_angsuran', $tanggalAngsuran)
+            ->where('marketing_id', Auth::id())
+            ->get()
+            ->map(function ($angsuran) {
+                return [
+                    'id' => $angsuran->id,
+                    'no_anggota' => $angsuran->pencairan->no_anggota,  
+                    'pinjaman_ke' => $angsuran->pencairan->pinjaman_ke,  
+                    'nama' => $angsuran->pencairan->nama, 
+                    'nominal' => $angsuran->nominal, 
+                    'angsuran_ke' => $angsuran->angsuran_ke,  
+                    'tenor' => $angsuran->pencairan->tenor, 
+                ];
+            });
+
+        if ($data->isEmpty()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tidak ada data angsuran untuk tanggal tersebut.',
+            ], 404);
+        }
 
         return response()->json([
             'status' => 'success',

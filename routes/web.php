@@ -54,6 +54,7 @@ Route::middleware('auth')->group(function () {
 
         // angsuran 
     Route::get('/laporan-angsuran', [LaporanController::class, 'angsuran'])->name('laporan.angsuran');
+    Route::post('/laporan/get-angsuran-by-date', [LaporanController::class, 'getAngsuranByDate']);
         
         // pencairan
     Route::get('/laporan-pencairan', [LaporanController::class, 'pencairan'])->name('laporan.pencairan');
