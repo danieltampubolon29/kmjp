@@ -21,10 +21,15 @@ Route::middleware('auth')->group(function () {
 
     // validasi
     Route::resource('validasi',ValidasiController::class);
+        // pencairan 
     Route::get('/validasi-pencairan', [ValidasiController::class, 'pencairan'])->name('validasi.pencairan');
     Route::post('/validasi/pencairan', [ValidasiController::class, 'validasiPencairan'])->name('validasi.semua-pencairan');
+        // angsuran
     Route::get('/validasi-angsuran', [ValidasiController::class, 'angsuran'])->name('validasi.angsuran');
     Route::post('/validasi/angsuran', [ValidasiController::class, 'validasiAngsuran'])->name('validasi.semua-angsuran');
+        // simpanan
+    Route::get('/validasi-simpanan', [ValidasiController::class, 'simpanan'])->name('validasi.simpanan');
+    Route::post('/validasi/simpanan', [ValidasiController::class, 'validasiSimpanan'])->name('validasi.semua-simpanan');
 
 
     // kasbon
@@ -57,10 +62,18 @@ Route::middleware('auth')->group(function () {
     Route::post('/angsuran/{id}/lock', [AngsuranController::class, 'lock'])->name('angsuran.lock');
     Route::get('/search-pencairan', [AngsuranController::class, 'searchPencairan'])->name('search.pencairan');
     
-    // route rekap data marketing
+    // progres
+        // route rekap data 
     Route::get('/rekap-data', [ProgresController::class, 'rekapData'])->name('progres.rekap-data');
     Route::get('/rekap-data/get-pencairan-data', [ProgresController::class, 'getPencairanData'])->name('progres.get-pencairan-data');
-    
+        // marketing 
+    Route::get('/rekap-marketing', [ProgresController::class, 'rekapMarketing'])->name('progres.rekap-marketing');
+    Route::get('/rekap-data/get-marketing-data', [ProgresController::class, 'getRekapData'])->name('progres.get-marketing-data');
+    // target harian
+    Route::get('/target-harian', [ProgresController::class, 'targetHarian'])->name('progres.target-harian');
+
+
+
     // route dashboard marketing cek data
     Route::get('/get-simpanan-data', [SimpananController::class, 'getSimpananData'])->name('get.simpanan.data');
     Route::get('/get-simpanan-transactions', [SimpananController::class, 'getTransactions']);
@@ -79,6 +92,7 @@ Route::middleware('auth')->group(function () {
 
         // harian
     Route::get('/laporan-harian', [LaporanController::class, 'harian'])->name('laporan.harian');
+    Route::post('/laporan/get-filtered-data', [LaporanController::class, 'getFilteredData'])->name('laporan.getFilteredData');
 });
 
 require __DIR__ . '/auth.php';

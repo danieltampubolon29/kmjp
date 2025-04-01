@@ -57,13 +57,18 @@
                 </a>
                 <ul class="sidebar-dropdown-menu">
                     <li class="sidebar-dropdown-menu-item">
-                        <a href="{{ route('validasi.angsuran') }}">
-                            Angsuran
+                        <a href="{{ route('validasi.pencairan') }}">
+                            Pencairan
                         </a>
                     </li>
                     <li class="sidebar-dropdown-menu-item">
-                        <a href="{{ route('validasi.pencairan') }}">
-                            Pencairan
+                        <a href="{{ route('validasi.simpanan') }}">
+                            Simpanan
+                        </a>
+                    </li>
+                    <li class="sidebar-dropdown-menu-item">
+                        <a href="{{ route('validasi.angsuran') }}">
+                            Angsuran
                         </a>
                     </li>
                 </ul>
@@ -76,13 +81,13 @@
                 </a>
                 <ul class="sidebar-dropdown-menu">
                     <li class="sidebar-dropdown-menu-item">
-                        <a href="{{ route('laporan.angsuran') }}">
-                            Laporan Angsuran
+                        <a href="{{ route('laporan.pencairan') }}">
+                            Laporan Pencairan
                         </a>
                     </li>
                     <li class="sidebar-dropdown-menu-item">
-                        <a href="{{ route('laporan.pencairan') }}">
-                            Laporan Pencairan
+                        <a href="{{ route('laporan.angsuran') }}">
+                            Laporan Angsuran
                         </a>
                     </li>
                     <li class="sidebar-dropdown-menu-item">
@@ -100,8 +105,18 @@
                 </a>
                 <ul class="sidebar-dropdown-menu">
                     <li class="sidebar-dropdown-menu-item">
+                        <a href="{{ route('progres.target-harian') }}">
+                            Target Harian
+                        </a>
+                    </li>
+                    <li class="sidebar-dropdown-menu-item">
                         <a href="{{ route('progres.rekap-data') }}">
                             Rekap Data
+                        </a>
+                    </li>
+                    <li class="sidebar-dropdown-menu-item">
+                        <a href="{{ route('progres.rekap-marketing') }}">
+                            Rekap Marketing
                         </a>
                     </li>
                 </ul>

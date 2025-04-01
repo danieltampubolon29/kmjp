@@ -15,6 +15,7 @@ class Simpanan extends Model
         'pencairan_id',
         'marketing_id',
         'tanggal_transaksi',
+        'tanggal_laporan',
         'jenis_transaksi',
         'jenis_simpanan',
         'nominal',

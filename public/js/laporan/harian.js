@@ -1,15 +1,3 @@
-document.getElementById('resetButton').addEventListener('click', () => {
-    document.getElementById('tableBody').innerHTML = '';
-    selectedDate = null;
-    selectedDateEl.innerText = '-';
-    selectedDayEl.innerText = '-';
-    document.getElementById('totalNominal').innerText = '-';
-    date = new Date();
-    currYear = date.getFullYear();
-    currMonth = date.getMonth();
-    renderCalendar();
-});
-
 const daysTag = document.querySelector(".days"),
     currentDate = document.querySelector(".current-date"),
     prevNextIcon = document.querySelectorAll(".icons span"),
@@ -20,9 +8,6 @@ let date = new Date(),
     currYear = date.getFullYear(),
     currMonth = date.getMonth(),
     selectedDate = null;
-
-let currentPage = 1; 
-let totalPages = 1; 
 
 const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli",
     "Agustus", "September", "Oktober", "November", "Desember"
@@ -79,7 +64,32 @@ function attachDateListeners() {
                 selectedDateEl.innerText = formattedDate;
                 selectedDayEl.innerText = dayOfWeek;
 
-                
+                try {
+                    const response = await fetch("/laporan/get-filtered-data", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                        },
+                        body: JSON.stringify({ selected_date: selectedDate }),
+                    });
+
+                    const data = await response.json();
+
+                    const totalAngsuran = parseFloat(data.total_angsuran) || 0;
+                    const administrasi = parseFloat(data.administrasi) || 0;
+                    const totalPencairan = parseFloat(data.total_pencairan) || 0;
+                    const totalSimpananTop = parseFloat(data.total_simpanan_top) || 0;
+                    const totalSimpananBottom = parseFloat(data.total_simpanan_bottom) || 0;
+
+                    document.getElementById("angsuran").innerText = totalAngsuran.toLocaleString('id-ID');
+                    document.getElementById("administrasi").innerText = administrasi.toLocaleString('id-ID');
+                    document.getElementById("pencairan").innerText = totalPencairan.toLocaleString('id-ID');
+                    document.getElementById("tabunganTop").innerText = totalSimpananTop.toLocaleString('id-ID');
+                    document.getElementById("tabunganBottom").innerText = totalSimpananBottom.toLocaleString('id-ID');
+                } catch (error) {
+                    console.error("Error fetching filtered data:", error);
+                }
 
                 $("#dateModal").modal("hide");
             }
@@ -113,29 +123,42 @@ document.getElementById('downloadBtn').addEventListener('click', function () {
     const originalWidth = cardBody.style.width;
     const originalHeight = cardBody.style.height;
 
-    cardBody.style.width = '1463px';
-    cardBody.style.height = '1042px';
+    cardBody.style.width = '100%';
+    cardBody.style.height = 'auto';
 
     html2canvas(cardBody, {
-        scale: 1.5 
+        scale: 2 
     }).then(function (canvas) {
         cardBody.style.width = originalWidth;
         cardBody.style.height = originalHeight;
 
+        const imgData = canvas.toDataURL('image/jpeg', 0.9);
+
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
-            orientation: 'landscape',
+            orientation: 'portrait',
             unit: 'mm',
-            format: 'a5',
-            compress: true 
+            format: 'a6', 
+            compress: true
         });
 
-        const imgData = canvas.toDataURL('image/jpeg', 0.9); 
         const imgProps = pdf.getImageProperties(imgData);
         const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const imgRatio = imgProps.width / imgProps.height;
 
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+        let imgWidth, imgHeight;
+        if (imgRatio > pdfWidth / pdfHeight) {
+            imgWidth = pdfWidth;
+            imgHeight = pdfWidth / imgRatio;
+        } else {
+            imgHeight = pdfHeight;
+            imgWidth = pdfHeight * imgRatio;
+        }
+
+        const x = (pdfWidth - imgWidth) / 2; 
+        const y = (pdfHeight - imgHeight) / 2; 
+        pdf.addImage(imgData, 'JPEG', x, y, imgWidth, imgHeight);
 
         let fileName = generateDynamicFileName();
         pdf.save(fileName);
@@ -147,19 +170,16 @@ document.getElementById('downloadBtn').addEventListener('click', function () {
 function generateDynamicFileName() {
     const selectedDateEl = document.getElementById('selectedDate');
     let selectedDate = selectedDateEl.innerText.trim();
-
     if (selectedDate === '-' || selectedDate === '') {
         const today = new Date();
         const day = String(today.getDate()).padStart(2, '0');
         const month = months[today.getMonth()];
         const year = today.getFullYear();
-        return `Ang-${day}-${month}-${year}.pdf`;
+        return `Har-${day}-${month}-${year}.pdf`;
     }
-
     const dateParts = selectedDate.split(' ');
     const day = dateParts[0];
     const month = dateParts[1];
     const year = dateParts[2];
-
-    return `Ang-${day}-${month}-${year}.pdf`;
+    return `Har-${day}-${month}-${year}.pdf`;
 }

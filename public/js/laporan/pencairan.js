@@ -134,7 +134,7 @@ function populateTable(data) {
                 <td style="border: 3px solid black;">${item.nama}</td>
                 <td style="border: 3px solid black;">${formatNominal(item.nominal)}</td>
                 <td style="border: 3px solid black;">${formatNominal(item.admin)}</td>
-                <td style="border: 3px solid black;">${item.simpanan !== "-" ? formatNominal(item.simpanan) : "-"}</td>
+                <td style="border: 3px solid black;">${item.simpanan !== "-" ? formatNominal(parseFloat(item.simpanan) || 0) : "-"}</td>
                 <td style="border: 3px solid black;">${formatNominal(item.nominal - item.admin - (item.simpanan !== "-" ? parseFloat(item.simpanan) : 0))}</td>
                 <td style="border: 3px solid black;">${item.tenor}</td>
                 <td style="border: 3px solid black;">${item.no_anggota}</td>

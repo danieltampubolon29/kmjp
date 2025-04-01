@@ -13,6 +13,7 @@ return new class extends Migration {
             $table->foreignId('pencairan_id')->nullable(); 
             $table->foreignId('marketing_id')->constrained('users');
             $table->date('tanggal_transaksi');
+            $table->date('tanggal_laporan')->nullable();
             $table->string('jenis_transaksi');
             $table->string('jenis_simpanan'); 
             $table->integer('nominal')->unsigned(); 

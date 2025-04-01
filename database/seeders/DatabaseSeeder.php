@@ -33,8 +33,8 @@ class DatabaseSeeder extends Seeder
             'password' => 'daniel123',
         ]);
         $this->call([
-            AnggotaSeeder::class,
-            PencairanSeeder::class,
+            // AnggotaSeeder::class,
+            // PencairanSeeder::class,
             // AngsuranSeeder::class,
         ]);
     }

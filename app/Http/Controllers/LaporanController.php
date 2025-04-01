@@ -97,4 +97,46 @@ class LaporanController extends Controller
             'data' => $data,
         ]);
     }
+
+    public function getFilteredData(Request $request)
+    {
+        $request->validate([
+            'selected_date' => 'required|date',
+        ]);
+
+        $selectedDate = $request->input('selected_date');
+        $marketingId = Auth::id();
+
+        $totalAngsuran = Angsuran::where('marketing_id', $marketingId)
+            ->where('tanggal_laporan', $selectedDate)
+            ->sum('nominal');
+
+        $totalPencairan = Pencairan::where('marketing_id', $marketingId)
+            ->where('tanggal_laporan', $selectedDate)
+            ->sum('nominal');
+
+        $totalSimpananTop = Simpanan::where('marketing_id', $marketingId)
+            ->whereIn('pencairan_id', function ($query) use ($marketingId, $selectedDate) {
+                $query->select('id')
+                    ->from('pencairan')
+                    ->where('marketing_id', $marketingId)
+                    ->where('tanggal_laporan', $selectedDate);
+            })
+            ->sum('nominal');
+
+        $totalSimpananBottom = Simpanan::where('marketing_id', $marketingId)
+            ->where('tanggal_laporan', $selectedDate)
+            ->where('jenis_transaksi', 'tarik')
+            ->sum('nominal');
+
+        $administrasi = $totalPencairan * 0.05;
+
+        return response()->json([
+            'total_angsuran' => $totalAngsuran,
+            'total_pencairan' => $totalPencairan,
+            'total_simpanan_top' => $totalSimpananTop,
+            'total_simpanan_bottom' => $totalSimpananBottom,
+            'administrasi' => $administrasi,
+        ]);
+    }
 }

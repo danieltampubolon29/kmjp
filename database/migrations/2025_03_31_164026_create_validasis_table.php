@@ -11,8 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('validasis', function (Blueprint $table) {
+        Schema::create('validasi', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('marketing_id')->constrained('users');
+            $table->integer('pencairan')->unsigned(); 
+            $table->integer('angsuran')->unsigned(); 
+            $table->integer('tarik_simpanan')->unsigned(); 
+            $table->integer('setor_simpanan')->unsigned(); 
             $table->timestamps();
         });
     }
@@ -22,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('validasis');
+        Schema::dropIfExists('validasi');
     }
 };

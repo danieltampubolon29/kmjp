@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Angsuran;
 use App\Models\Validasi;
 use App\Models\Pencairan;
+use App\Models\Simpanan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,12 +21,21 @@ class ValidasiController extends Controller
             ->paginate(10);
         return view('validasi.pencairan', compact('datas'));
     }
+
     public function angsuran()
     {
         $datas = Angsuran::where('marketing_id', Auth::id())
             ->whereNull('tanggal_laporan')
             ->paginate(10);
         return view('validasi.angsuran', compact('datas'));
+    }
+
+    public function simpanan()
+    {
+        $datas = Simpanan::where('marketing_id', Auth::id())
+            ->whereNull('tanggal_laporan')
+            ->paginate(10);
+        return view('validasi.simpanan', compact('datas'));
     }
 
     public function validasiPencairan(Request $request)
@@ -53,11 +63,24 @@ class ValidasiController extends Controller
         Angsuran::where('marketing_id', Auth::id())
             ->whereNull('tanggal_laporan')
             ->update(['tanggal_laporan' => $tanggalLaporan]);
-
         return redirect()->route('validasi.angsuran')->with('success', 'Validasi Angsuran berhasil dilakukan!');
     }
 
-    
+    public function ValidasiSimpanan(Request $request)
+    {
+        $request->validate([
+            'tanggal_laporan' => 'required|date',
+        ]);
+
+        $tanggalLaporan = $request->input('tanggal_laporan');
+
+        Simpanan::where('marketing_id', Auth::id())
+            ->whereNull('tanggal_laporan')
+            ->update(['tanggal_laporan' => $tanggalLaporan]);
+        return redirect()->route('validasi.simpanan')->with('success', 'Validasi Simpanan berhasil dilakukan!');
+    }
+
+
     public function store(Request $request)
     {
         //

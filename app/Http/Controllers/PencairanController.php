@@ -24,14 +24,16 @@ class PencairanController extends Controller
         }
 
         if ($search) {
-            $query->whereHas('anggota', function ($q) use ($search) {
-                $q->where('no_anggota', 'like', '%' . $search . '%')
-                    ->orWhere('nama', 'like', '%' . $search . '%');
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('anggota', function ($qAnggota) use ($search) {
+                    $qAnggota->where('no_anggota', 'like', '%' . $search . '%')
+                        ->orWhere('nama', 'like', '%' . $search . '%');
+                });
+                $q->orWhere('jatuh_tempo', 'like', '%' . $search . '%');
+                $q->orWhere('tanggal_pencairan', 'like', '%' . $search . '%');
             });
         }
-
         $pencairans = $query->orderBy('created_at', 'desc')->paginate(10);
-
         return view('pencairan.index', compact('pencairans', 'search'));
     }
 
@@ -172,7 +174,7 @@ class PencairanController extends Controller
             return redirect()->route('pencairan.show', ['pencairan' => $pencairan->id])
                 ->withErrors(['error' => 'Tidak dapat menghapus data karena masih memiliki angsuran terkait.']);
         }
-        
+
         $anggota = Anggota::findOrFail($pencairan->anggota_id);
         $simpananPokok = $pencairan->nominal * 0.05;
         $anggota->simpanan = ($anggota->simpanan ?? 0) - $simpananPokok;

@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\KasbonHarianMarketing;
+use App\Models\User;
+use Carbon\Carbon;
+
 
 class ProgresController extends Controller
 {
@@ -28,6 +31,51 @@ class ProgresController extends Controller
         return view('progres.rekap-data', compact('progres', 'totalKasbon'));
     }
 
+    public function rekapMarketing()
+    {
+        $marketings = User::where('role', 'marketing')->get();
+        return view('progres.rekap-marketing', compact('marketings'));
+    }
+
+
+    public function targetHarian(Request $request)
+{
+    // Set locale ke bahasa Indonesia
+    Carbon::setLocale('id');
+
+    // Mendapatkan nama hari dalam bahasa Indonesia
+    $currentDay = Carbon::now()->isoFormat('dddd'); 
+
+    $query = Pencairan::query();
+
+    // Filter berdasarkan role marketing
+    if (Auth::user()->role === 'marketing') {
+        $query->where('marketing_id', Auth::id());
+    }
+
+    // Filter berdasarkan jatuh tempo yang sesuai dengan hari ini
+    $query->where('jatuh_tempo', 'like', '%' . $currentDay . '%');
+
+    // Pencarian berdasarkan input search
+    $search = $request->input('search');
+    if ($search) {
+        $query->where(function ($q) use ($search) {
+            $q->whereHas('anggota', function ($qAnggota) use ($search) {
+                $qAnggota->where('no_anggota', 'like', '%' . $search . '%')
+                    ->orWhere('nama', 'like', '%' . $search . '%');
+            });
+            $q->orWhere('tanggal_pencairan', 'like', '%' . $search . '%');
+        });
+    }
+
+    // Paginasi hasil query
+    $pencairans = $query->orderBy('created_at', 'desc')->paginate(10);
+
+    // Kirim data ke view
+    return view('progres.target-harian', compact('pencairans', 'search', 'currentDay'));
+}
+
+    // rekap data
     public function getPencairanData(Request $request)
     {
         $request->validate([
@@ -118,9 +166,129 @@ class ProgresController extends Controller
             'totalSisaKredit' => $totalSisaKredit,
             'totalPencairanPending' => $totalPencairanPending,
             'saldoSimpanan' => $saldoSimpanan,
-            'pengambilan_kasbon' => $pengambilanKasbon, 
-            'pengembalian_kasbon' => $pengembalianKasbon, 
-            'kasbon_perbulan' => $kasbonPerbulan, 
+            'pengambilan_kasbon' => $pengambilanKasbon,
+            'pengembalian_kasbon' => $pengembalianKasbon,
+            'kasbon_perbulan' => $kasbonPerbulan,
+        ]);
+    }
+
+    // rekap marketing
+    public function getRekapData(Request $request)
+    {
+        $request->validate([
+            'month' => 'required|integer|min:1|max:12',
+            'year' => 'required|integer|min:2000|max:2100',
+            'marketing_id' => 'nullable|exists:users,id',
+        ]);
+
+        $month = $request->input('month');
+        $year = $request->input('year');
+        $marketingId = $request->input('marketing_id');
+
+        if (!$marketingId && Auth::user()->role === 'marketing') {
+            $marketingId = Auth::id();
+        }
+
+        $progres = KasbonHarianMarketing::where('marketing_id', $marketingId)
+            ->where('status', false)
+            ->sum('nominal');
+
+        $totalNominal = KasbonHarianMarketing::where('marketing_id', $marketingId)
+            ->where('status', true)
+            ->sum('nominal');
+        $totalSisaKasbon = KasbonHarianMarketing::where('marketing_id', $marketingId)
+            ->where('status', true)
+            ->sum('sisa_kasbon');
+
+        $totalKasbon = $totalNominal - $totalSisaKasbon;
+
+        $pengambilanKasbon = KasbonHarianMarketing::whereMonth('tanggal', $month)
+            ->whereYear('tanggal', $year)
+            ->where('marketing_id', $marketingId)
+            ->where('status', true)
+            ->sum('nominal');
+
+        $pengembalianKasbon = KasbonHarianMarketing::whereMonth('tanggal', $month)
+            ->whereYear('tanggal', $year)
+            ->where('marketing_id', $marketingId)
+            ->where('status', true)
+            ->sum('sisa_kasbon');
+
+        $kasbonPerbulan = $pengambilanKasbon - $pengembalianKasbon;
+
+        $pencairanData = Pencairan::whereMonth('tanggal_laporan', $month)
+            ->whereYear('tanggal_laporan', $year)
+            ->where('marketing_id', $marketingId)
+            ->selectRaw('DATE(tanggal_laporan) as date, SUM(nominal) as total')
+            ->groupBy('date')
+            ->get()
+            ->keyBy('date');
+
+        $totalPencairan = Pencairan::whereMonth('tanggal_laporan', $month)
+            ->whereYear('tanggal_laporan', $year)
+            ->where('marketing_id', $marketingId)
+            ->sum('nominal');
+
+        $angsuranData = Angsuran::whereMonth('tanggal_laporan', $month)
+            ->whereYear('tanggal_laporan', $year)
+            ->where('marketing_id', $marketingId)
+            ->selectRaw('DATE(tanggal_laporan) as date, SUM(nominal) as total')
+            ->groupBy('date')
+            ->get()
+            ->keyBy('date');
+
+        $totalAngsuran = Angsuran::whereMonth('tanggal_laporan', $month)
+            ->whereYear('tanggal_laporan', $year)
+            ->where('marketing_id', $marketingId)
+            ->sum('nominal');
+
+        if (Auth::user()->role === 'marketing') {
+            $userId = $marketingId;
+            $totalAnggota = DB::table('anggota')
+                ->where('marketing_id', $userId)
+                ->count();
+
+            $totalSisaKredit = DB::table('pencairan')
+                ->where('marketing_id', $userId)
+                ->sum('sisa_kredit');
+
+            $totalPencairanPending = DB::table('pencairan')
+                ->where('marketing_id', $userId)
+                ->where('status', 0)
+                ->count();
+
+            $totalSetor = DB::table('simpanan')
+                ->where('marketing_id', $userId)
+                ->where('jenis_transaksi', 'setor')
+                ->sum('nominal');
+
+            $totalTarik = DB::table('simpanan')
+                ->where('marketing_id', $userId)
+                ->where('jenis_transaksi', 'tarik')
+                ->sum('nominal');
+
+            $saldoSimpanan = $totalSetor - $totalTarik;
+        } else {
+            $totalAnggota = 0;
+            $totalSisaKredit = 0;
+            $totalPencairanPending = 0;
+            $saldoSimpanan = 0;
+        }
+
+        return response()->json([
+            'pencairan_data' => $pencairanData,
+            'total_pencairan' => $totalPencairan,
+            'angsuran_data' => $angsuranData,
+            'total_angsuran' => $totalAngsuran,
+            'totalAnggota' => $totalAnggota,
+            'totalSisaKredit' => $totalSisaKredit,
+            'totalPencairanPending' => $totalPencairanPending,
+            'saldoSimpanan' => $saldoSimpanan,
+            'pengambilan_kasbon' => $pengambilanKasbon,
+            'pengembalian_kasbon' => $pengembalianKasbon,
+            'kasbon_perbulan' => $kasbonPerbulan,
+            'progres' => $progres,
+            'totalKasbon' => $totalKasbon
         ]);
     }
 }

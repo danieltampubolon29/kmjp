@@ -3,20 +3,48 @@
 @section('content')
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="{{ asset('css/calender.css') }}">
+    <style>
+        #fixedTable {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        #fixedTable td {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 14px;
+        }
+
+        .table-bordered .biru {
+            background: rgba(116, 206, 233, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            #fixedTable td , .ikut{
+                font-size: 10px;
+            }
+            #cardBody h5 {
+                font-size: 20px;
+            }
+            
+        }
+    </style>
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
     <x-bar.navbar>Laporan Harian
         <x-slot name="content">
             <div class="container mb-5">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-3">
                         <div class="card">
                             <div class="card-header">Informasi</div>
                             <div class="card-body">
-                                <p><strong>Marketing: </strong> <span id="marketingName">{{ Auth::user()->name }}</span></p>
-                                <p><strong>Tanggal: </strong> <span id="selectedDate">-</span></p>
-                                <p><strong>Hari: </strong> <span id="selectedDay">-</span></p>
-                                <p><strong>Kasbon: </strong>Rp. {{ number_format($kasbon, 0, ',', '.') }}</p>
+                                @if($kasbon == 0 || $kasbon == null)
+                                    <p>Anda tidak memiliki kasbon lapangan dari kantor.</p>
+                                @else
+                                    <p>Kasbon lapangan Anda sebesar Rp. <strong>{{ number_format($kasbon, 0, ',', '.') }}</strong></p>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -34,74 +62,97 @@
                                 <div class="text-center mt-3 mb-3">
                                     <h5 class="fw-bold">KAS HARIAN MARKETING</h5>
                                 </div>
-                                <table class="table table-bordered">
-                                    <tbody>
-                                        <tr>
-                                            <td>Dari Kantor</td>
-                                            <td></td>
-                                            <td>{{ number_format($kasbon, 0, ',', '.') }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Angsuran</td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Tabungan</td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Administrasi</td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Total Penerimaan</strong></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Pencairan</td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Trf Ke Kantor</td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Tabungan</td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Total Pengeluaran</strong></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td><strong>Saldo Akhir</strong></td>
-                                            <td></td>
-                                            <td></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-footer">
-                        <div class="row d-flex align-items-center">
-                            <div class="col-6 d-flex align-items-center">
-                                <button class="btn btn-danger h-100" id="resetButton">
-                                    <i class="ri-refresh-line me-1"></i> Reset
-                                </button>
-                            </div>
-                            <div class="col-6 d-flex justify-content-end align-items-center">
-                                <nav aria-label="Page navigation">
-                                    <ul class="pagination mb-0" id="pagination"></ul>
-                                </nav>
+                                <div class="d-flex justify-content-between">
+                                    <div class="left-column">
+                                        <p><strong>Tanggal: </strong> <span id="selectedDate"></span></p>
+                                        <p><strong>Hari: </strong> <span id="selectedDay"></span></p>
+                                    </div>
+                                    <div class="right-column">
+                                        <p><strong>Marketing: </strong> <span
+                                                id="marketingName">{{ Auth::user()->name }}</span></p>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table id="fixedTable" class="table table-bordered" style="border: 1px">
+                                        <tbody>
+                                            <tr>
+                                                <td>Dari Kantor</td>
+                                                <td class="biru"></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Angsuran</td>
+                                                <td class="text-center" id="angsuran"></td>
+                                                <td class="biru"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Tabungan</td>
+                                                <td class="text-center" id="tabunganTop"></td>
+                                                <td class="biru"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Administrasi</td>
+                                                <td class="text-center" id="administrasi"></td>
+                                                <td class="biru"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Total Penerimaan</td>
+                                                <td class="biru"></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Pencairan</td>
+                                                <td class="text-center" id="pencairan"></td>
+                                                <td class="biru"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Trf Ke Kantor</td>
+                                                <td></td>
+                                                <td class="biru"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Tabungan</td>
+                                                <td class="text-center" id="tabunganBottom"></td>
+                                                <td class="biru"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Lainnya</td>
+                                                <td></td>
+                                                <td class="biru"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Total Pengeluaran</td>
+                                                <td class="biru"></td>
+                                                <td></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Saldo Akhir</strong></td>
+                                                <td class="biru"></td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="row mt-5">
+                                    <div class="col-6 text-center">
+                                        <strong class="ikut">Marketing</strong>
+                                        <div class="signature-box mt-3">
+                                            <span class="bracket">
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </span>
+                                        </div>
+                                        <p class="mt-3 ikut" id="marketingName">{{ Auth::user()->name }}</p>
+                                    </div>
+                                    <div class="col-6 text-center">
+                                        <strong class="ikut">Koordinator</strong>
+                                        <div class="signature-box mt-3">
+                                            <span class="bracket">
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            </span>
+                                        </div>
+                                        <p class="mt-3 ikut">_ _ _ _ _ _ _ _ _</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

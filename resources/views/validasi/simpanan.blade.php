@@ -1,7 +1,7 @@
 @extends('layouts.aplication')
 @section('title', 'Validasi')
 @section('content')
-    <x-bar.navbar>Validasi Pencairan
+    <x-bar.navbar>Validasi Simpanan
         <x-slot name="content">
             <div class="container mt-4">
                 <x-alert-message></x-alert-message>
@@ -17,18 +17,16 @@
                                         <th>NO</th>
                                         <th>NO ANGGOTA</th>
                                         <th>NAMA</th>
-                                        <th>TANGGAL</th>
                                         <th>NOMINAL</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($datas as $data)
-                                        <tr class="align-middle" style="white-space: nowrap;">
+                                    @foreach ($datas as $simpanan)
+                                        <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $data->anggota->no_anggota }}</td>
-                                            <td>{{ $data->anggota->nama }}</td>
-                                            <td>{{ $data->tanggal_pencairan }}</td>
-                                            <td>Rp. {{ number_format($data->nominal, 0, ',', '.') }},-</td>
+                                            <td>{{ $simpanan->anggota->no_anggota }}</td>
+                                            <td>{{ $simpanan->anggota->nama }}</td>
+                                            <td>Rp. {{ number_format($simpanan->nominal, 0, ',', '.') }},-</td>
                                         </tr>
                                     @endforeach
                                 </tbody>
@@ -38,11 +36,12 @@
                     </div>
                 </div>
             </div>
+
             <div class="modal fade" id="validasiModal" tabindex="-1" aria-labelledby="validasiModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
-                        <form action="{{ route('validasi.semua-pencairan') }}" method="POST">
+                        <form action="{{ route('validasi.semua-simpanan') }}" method="POST">
                             @csrf
                             <div class="modal-header bg-primary text-white">
                                 <h5 class="modal-title" id="validasiModalLabel">Konfirmasi Validasi</h5>
@@ -50,7 +49,8 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <h6>Pilih tanggal untuk validasi. Setelah validasi, data pencairan tidak bisa diubah dan akan
+                                <h6>Pilih tanggal untuk validasi. Setelah validasi, data Simpananphp tidak bisa diubah dan
+                                    akan
                                     masuk ke laporan Anda sesuai tanggal yang Anda pilih.</h6>
                                 <div class="mb-3">
                                     <label for="tanggal_laporan" class="form-label">Tanggal Laporan</label>
@@ -66,6 +66,7 @@
                     </div>
                 </div>
             </div>
+
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         </x-slot>
     </x-bar.navbar>
