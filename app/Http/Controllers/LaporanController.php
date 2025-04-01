@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Angsuran;
+use App\Models\KasbonHarianMarketing;
 use App\Models\Simpanan;
 use App\Models\Pencairan;
 use Illuminate\Http\Request;
@@ -22,17 +23,20 @@ class LaporanController extends Controller
 
     public function harian()
     {
-        return view('laporan.harian');
+        $kasbon = KasbonHarianMarketing::where('marketing_id', Auth::id())
+        ->where('status', false)
+        ->sum('nominal');
+        return view('laporan.harian', compact('kasbon'));
     }
 
     public function getPencairanByDate(Request $request)
     {
         $request->validate([
-            'tanggal_pencairan' => 'required|date',
+            'tanggal_laporan' => 'required|date',
         ]);
 
-        $tanggal = $request->tanggal_pencairan;
-        $pencairan = Pencairan::whereDate('tanggal_pencairan', $tanggal)
+        $tanggal = $request->tanggal_laporan;
+        $pencairan = Pencairan::whereDate('tanggal_laporan', $tanggal)
             ->where('marketing_id', Auth::id())
             ->select('id', 'nama', 'nominal', 'tenor', 'no_anggota')
             ->get();
@@ -60,13 +64,13 @@ class LaporanController extends Controller
     public function getAngsuranByDate(Request $request)
     {
         $request->validate([
-            'tanggal_angsuran' => 'required|date',
+            'tanggal_laporan' => 'required|date',
         ]);
 
-        $tanggalAngsuran = $request->input('tanggal_angsuran');
+        $tanggalLaporan = $request->input('tanggal_laporan');
 
         $data = Angsuran::with('pencairan')
-            ->where('tanggal_angsuran', $tanggalAngsuran)
+            ->where('tanggal_laporan', $tanggalLaporan)
             ->where('marketing_id', Auth::id())
             ->get()
             ->map(function ($angsuran) {

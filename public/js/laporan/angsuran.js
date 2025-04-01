@@ -88,7 +88,7 @@ function attachDateListeners() {
                                 'meta[name="csrf-token"]').getAttribute('content')
                         },
                         body: JSON.stringify({
-                            tanggal_angsuran: selectedDate
+                            tanggal_laporan: selectedDate
                         })
                     });
 

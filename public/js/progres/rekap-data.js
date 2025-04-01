@@ -15,6 +15,12 @@
                         alert('Masukkan tahun yang valid (2000-2100).');
                         return;
                     }
+                    const monthNames = [
+                        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+                    ];
+                    const selectedMonthName = monthNames[month - 1]; // Index dimulai dari 0
+                    document.querySelector('#kasbonBulanIni').textContent = `Kasbon ${selectedMonthName}`;
 
                     fetch(`/rekap-data/get-pencairan-data?month=${month}&year=${year}`)
                         .then(response => {
@@ -29,6 +35,17 @@
                             document.getElementById('totalSisaKredit').textContent =
                                 `Rp. ${formatCurrency(data.totalSisaKredit)}`;
                             document.getElementById('totalPencairanPending').textContent = data.totalPencairanPending;
+                            document.getElementById('pengambilanKasbon').textContent = `Rp ${formatCurrency(data.pengambilan_kasbon)}`;
+                            document.getElementById('pengambilanKasbon').textContent = `Rp ${formatCurrency(data.pengambilan_kasbon)}`;
+
+                            const pengembalianKasbonElement = document.getElementById('pengembalianKasbon');
+                            pengembalianKasbonElement.textContent = `Rp ${formatCurrency(data.pengembalian_kasbon)}`;
+                            if (data.pengembalian_kasbon < 0) {
+                                pengembalianKasbonElement.style.color = 'red'; 
+                            } else {
+                                pengembalianKasbonElement.style.color = ''; 
+}
+                            document.getElementById('kasbonPerBulan').textContent = `Rp ${formatCurrency(data.kasbon_perbulan)}`;
 
                             const daysInMonth = getDaysInMonth(year, month);
                             const tbody = document.querySelector('#dynamicTable tbody');

@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('jatuh_tempo');
             $table->integer('sisa_kredit');
             $table->date('tanggal_pencairan');
+            $table->date('tanggal_laporan')->nullable();
             $table->string('foto_pencairan')->nullable();
             $table->string('foto_rumah')->nullable();
             $table->string('marketing');

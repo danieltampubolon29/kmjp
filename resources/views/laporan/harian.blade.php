@@ -8,104 +8,86 @@
     <x-bar.navbar>Laporan Harian
         <x-slot name="content">
             <div class="container mb-5">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <button class="btn btn-primary" id="downloadBtn">
-                            <i class="ri-download-2-line"></i>
-                        </button>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dateModal">
-                                Pilih Tanggal
-                            </button>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">Informasi</div>
+                            <div class="card-body">
+                                <p><strong>Marketing: </strong> <span id="marketingName">{{ Auth::user()->name }}</span></p>
+                                <p><strong>Tanggal: </strong> <span id="selectedDate">-</span></p>
+                                <p><strong>Hari: </strong> <span id="selectedDay">-</span></p>
+                                <p><strong>Kasbon: </strong>Rp. {{ number_format($kasbon, 0, ',', '.') }}</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="card-body" id="cardBody">
-                        <div class="text-center mt-5 mb-3">
-                            <h5 class="fw-bold">KAS HARIAN MARKETING</h5>
-                        </div>
-                        <div class="d-flex justify-content-between mb-3">
-                            <div>
-                                <strong>Marketing:</strong> <span id="marketingName">{{ Auth::user()->name }}</span>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <button class="btn btn-primary" id="downloadBtn">
+                                    <i class="ri-download-2-line"></i>
+                                </button>
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dateModal">
+                                    Pilih Tanggal
+                                </button>
                             </div>
-                            <div>
-                                <strong>Tanggal:</strong> <span id="selectedDate">-</span>
-                            </div>
-                            <div>
-                                <strong>Hari:</strong> <span id="selectedDay">-</span>
-                            </div>
-                        </div>
-                        <table class="table table-bordered">
-                            <tbody>
-                                <tr>
-                                    <td>Dari Kantor</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>Angsuran</td>
-                                    <td>1.560.000</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>Tabungan</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>Administrasi</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Total Penerimaan</strong></td>
-                                    <td></td>
-                                    <td><strong>1.560.000</strong></td>
-                                </tr>
-                                <tr>
-                                    <td>Pencairan</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>Trf Ke Kantor</td>
-                                    <td>1.000.000</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>Tabungan</td>
-                                    <td>275.000</td>
-                                    <td>PASSIS</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Total Pengeluaran</strong></td>
-                                    <td></td>
-                                    <td><strong>1.275.000</strong></td>
-                                </tr>
-                                <tr>
-                                    <td><strong>Saldo Akhir</strong></td>
-                                    <td></td>
-                                    <td><strong>285.000</strong></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="row mt-5">
-                            <div class="col-6 text-center">
-                                <strong>Marketing</strong>
-                                <div class="signature-box mt-5">
-                                    <span class="bracket">
-                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    </span>
+                            <div class="card-body" id="cardBody">
+                                <div class="text-center mt-3 mb-3">
+                                    <h5 class="fw-bold">KAS HARIAN MARKETING</h5>
                                 </div>
-                                <p class="mt-3" id="marketingName">{{ Auth::user()->name }}</p>
-                            </div>
-                            <div class="col-6 text-center">
-                                <strong>Koordinator</strong>
-                                <div class="signature-box mt-5">
-                                    <span class="bracket">
-                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    </span>
-                                </div>
-                                <p class="mt-3">_ _ _ _ _ _ _ _ _</p>
+                                <table class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td>Dari Kantor</td>
+                                            <td></td>
+                                            <td>{{ number_format($kasbon, 0, ',', '.') }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Angsuran</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tabungan</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Administrasi</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Total Penerimaan</strong></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Pencairan</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Trf Ke Kantor</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tabungan</td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Total Pengeluaran</strong></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td><strong>Saldo Akhir</strong></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

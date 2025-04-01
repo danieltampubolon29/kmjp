@@ -14,6 +14,7 @@ class Angsuran extends Model
         'nominal',
         'tanggal_angsuran',
         'marketing_id',
+        'tanggal_laporan',
         'is_locked',
         'latitude',
         'longitude',

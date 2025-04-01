@@ -21,6 +21,7 @@ class Pencairan extends Model
         'jatuh_tempo',
         'sisa_kredit',
         'tanggal_pencairan',
+        'tanggal_laporan',
         'foto_pencairan',
         'foto_rumah',
         'marketing',

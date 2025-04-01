@@ -49,17 +49,21 @@
                     </li>
                 </ul>
             </li>
-            
             <li class="sidebar-menu-item has-dropdown">
                 <a href="#">
-                    <i class="ri-window-line sidebar-menu-item-icon"></i>
-                    Progres
+                    <i class="fas fa-shield-alt sidebar-menu-item-icon"></i>
+                    Validasi Data
                     <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
                 </a>
                 <ul class="sidebar-dropdown-menu">
                     <li class="sidebar-dropdown-menu-item">
-                        <a href="{{ route('progres.rekap-data') }}">
-                            Rekap Data
+                        <a href="{{ route('validasi.angsuran') }}">
+                            Angsuran
+                        </a>
+                    </li>
+                    <li class="sidebar-dropdown-menu-item">
+                        <a href="{{ route('validasi.pencairan') }}">
+                            Pencairan
                         </a>
                     </li>
                 </ul>
@@ -90,6 +94,20 @@
             </li>
             <li class="sidebar-menu-item has-dropdown">
                 <a href="#">
+                    <i class="ri-window-line sidebar-menu-item-icon"></i>
+                    Progres
+                    <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
+                </a>
+                <ul class="sidebar-dropdown-menu">
+                    <li class="sidebar-dropdown-menu-item">
+                        <a href="{{ route('progres.rekap-data') }}">
+                            Rekap Data
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="sidebar-menu-item has-dropdown">
+                <a href="#">
                     <i class="ri-settings-3-line sidebar-menu-item-icon rotating-icon"></i>
                     Setting
                     <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
@@ -113,13 +131,15 @@
                     Log Out
                 </a>
             </li>
-            
-            <div class="modal fade" data-bs-backdrop="false" id="logoutModal" tabindex="-1" aria-labelledby="logoutConfirmationModalLabel" aria-hidden="true">
+
+            <div class="modal fade" data-bs-backdrop="false" id="logoutModal" tabindex="-1"
+                aria-labelledby="logoutConfirmationModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content bg-dark text-white">
                         <div class="modal-header">
                             <h5 class="modal-title" id="logoutConfirmationModalLabel">Konfirmasi Log Out</h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
                         </div>
                         <div class="modal-body ">
                             Apakah Anda yakin ingin Log Out?
@@ -135,13 +155,13 @@
                 </div>
             </div>
             <script>
-                document.addEventListener('DOMContentLoaded', function () {
+                document.addEventListener('DOMContentLoaded', function() {
                     const logoutLink = document.getElementById('logout-link');
                     const logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
-            
-                    logoutLink.addEventListener('click', function (e) {
-                        e.preventDefault(); 
-                        logoutModal.show(); 
+
+                    logoutLink.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        logoutModal.show();
                     });
                 });
             </script>

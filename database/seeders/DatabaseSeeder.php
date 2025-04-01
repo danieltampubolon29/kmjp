@@ -32,7 +32,10 @@ class DatabaseSeeder extends Seeder
             'role' => 'marketing',
             'password' => 'daniel123',
         ]);
-        $this->call(AnggotaSeeder::class);
-        $this->call(PencairanSeeder::class);
+        $this->call([
+            AnggotaSeeder::class,
+            PencairanSeeder::class,
+            // AngsuranSeeder::class,
+        ]);
     }
 }

@@ -11,12 +11,21 @@ use App\Http\Controllers\PencairanController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\KasbonHarianMarketingController;
 use App\Http\Controllers\Marketing\MarketingController;
+use App\Http\Controllers\ValidasiController;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
 Route::middleware('auth')->group(function () {
+
+    // validasi
+    Route::resource('validasi',ValidasiController::class);
+    Route::get('/validasi-pencairan', [ValidasiController::class, 'pencairan'])->name('validasi.pencairan');
+    Route::post('/validasi/pencairan', [ValidasiController::class, 'validasiPencairan'])->name('validasi.semua-pencairan');
+    Route::get('/validasi-angsuran', [ValidasiController::class, 'angsuran'])->name('validasi.angsuran');
+    Route::post('/validasi/angsuran', [ValidasiController::class, 'validasiAngsuran'])->name('validasi.semua-angsuran');
+
 
     // kasbon
     Route::resource('kasbon',KasbonHarianMarketingController::class);

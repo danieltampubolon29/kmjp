@@ -17,6 +17,7 @@ return new class extends Migration
             $table->date('tanggal_angsuran'); 
             $table->foreignId('marketing_id')->constrained('users');
             $table->boolean('is_locked')->default(false);
+            $table->date('tanggal_laporan')->nullable(); 
             $table->string('latitude')->nullable();
             $table->string('longitude')->nullable();
             $table->timestamps();

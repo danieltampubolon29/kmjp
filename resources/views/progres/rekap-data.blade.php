@@ -3,15 +3,59 @@
 @section('content')
     <x-bar.navbar>Rekap Data
         <x-slot name="content">
+            <style>
+                .card-footer {
+                    padding: 0;
+                    margin-top: auto;
+                }
+
+                .card-footer .row {
+                    align-items: center;
+                }
+
+                .card-footer .col-6,
+                .card-footer .col-1,
+                {
+                padding: 0.5rem;
+                display: flex;
+                align-items: center;
+                }
+            </style>
             <div class="py-4 px-3">
                 <div class="row d-flex align-items-stretch">
-                    <div class="col-lg-3 mt-3">
+                    <div class="col-lg-4 mt-3">
                         <div class="card p-3 shadow-sm h-100">
-                            <h5 class="mb-3">Informasi</h5>
-                            <p>Selamat datang di dashboard koperasi. Anda dapat melihat ringkasan data di sini.</p>
+                            <h5 class="mb-3">Informasi Kasbon</h5>
+                            <div class="row">
+                                <div class="col-6">Kasbon Progres</div>
+                                <div class="col-1 text-center">:</div>
+                                <div class="col-5 text-end">Rp {{ number_format($progres, 0, ',', '.') }}</div>
+
+                                <div class="col-6">Pengambilan </div>
+                                <div class="col-1 text-center">:</div>
+                                <div class="col-5 text-end" id="pengambilanKasbon"></div>
+
+                                <div class="col-6">Pengembalian </div>
+                                <div class="col-1 text-center">:</div>
+                                <div class="col-5 text-end" id="pengembalianKasbon"></div>
+
+                                <div class="col-6" id="kasbonBulanIni">Kasbon </div>
+                                <div class="col-1 text-center">:</div>
+                                <div class="col-5 text-end" id="kasbonPerBulan"></div>
+
+                            </div>
+                            <div class="card-footer bg-transparent border-0 mt-auto">
+                                <div class="row">
+                                    <div class="col-6"><strong>Total Kasbon</strong></div>
+                                    <div class="col-1 text-center"><strong>:</strong></div>
+                                    <div class="col-5 text-end">
+                                        <strong>Rp {{ number_format($totalKasbon, 0, ',', '.') }}</strong>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-lg-9 mt-3">
+                    <div class="col-lg-8 mt-3">
                         <div class="row g-3">
                             <div class="col-12 col-sm-6">
                                 <a href="#"

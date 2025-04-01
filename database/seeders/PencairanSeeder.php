@@ -23,7 +23,7 @@ class PencairanSeeder extends Seeder
             return;
         }
 
-        for ($i = 1; $i <= 100; $i++) { 
+        for ($i = 1; $i <= 30; $i++) { 
             // Pilih anggota secara acak
             $anggota = $faker->randomElement($anggotas);
             $marketingId = $faker->randomElement($users);
@@ -52,10 +52,10 @@ class PencairanSeeder extends Seeder
                 'tanggal_pencairan' => now()->format('Y-m-d'),
                 'foto_pencairan' => null, 
                 'foto_rumah' => null, 
-                'marketing' => User::find($marketingId)->name ?? 'Unknown', // Ambil nama marketing
+                'marketing' => User::find($marketingId)->name ?? 'Unknown', 
                 'marketing_id' => $marketingId,
-                'status' => false, // Sesuai migration
-                'is_locked' => false, // Default value sesuai migration
+                'status' => false, 
+                'is_locked' => false, 
                 'latitude' => (string) $faker->latitude(-90, 90), 
                 'longitude' => (string) $faker->longitude(-180, 180), 
                 'created_at' => now(),
