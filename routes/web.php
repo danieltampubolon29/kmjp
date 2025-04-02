@@ -1,17 +1,20 @@
 <?php
 
+use App\Models\HariKerja;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Request;
 use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProgresController;
 use App\Http\Controllers\AngsuranController;
 use App\Http\Controllers\SimpananController;
+use App\Http\Controllers\ValidasiController;
+use App\Http\Controllers\HariKerjaController;
 use App\Http\Controllers\PencairanController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\KasbonHarianMarketingController;
 use App\Http\Controllers\Marketing\MarketingController;
-use App\Http\Controllers\ValidasiController;
+use App\Http\Controllers\KasbonHarianMarketingController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -72,7 +75,10 @@ Route::middleware('auth')->group(function () {
     // target harian
     Route::get('/target-harian', [ProgresController::class, 'targetHarian'])->name('progres.target-harian');
 
-
+    // hari kerja
+    Route::get('/hari-kerja', [HariKerjaController::class, 'index'])->name('hari-kerja.index');
+    Route::post('/hari-kerja/store', [HariKerjaController::class, 'store'])->name('hari-kerja.store');
+    
 
     // route dashboard marketing cek data
     Route::get('/get-simpanan-data', [SimpananController::class, 'getSimpananData'])->name('get.simpanan.data');

@@ -42,11 +42,6 @@
                             Angsuran
                         </a>
                     </li>
-                    <li class="sidebar-dropdown-menu-item">
-                        <a href="{{ route('kasbon.index') }}">
-                            Kasbon Marketing
-                        </a>
-                    </li>
                 </ul>
             </li>
             <li class="sidebar-menu-item has-dropdown">
@@ -114,11 +109,7 @@
                             Rekap Data
                         </a>
                     </li>
-                    <li class="sidebar-dropdown-menu-item">
-                        <a href="{{ route('progres.rekap-marketing') }}">
-                            Rekap Marketing
-                        </a>
-                    </li>
+                    
                 </ul>
             </li>
             <li class="sidebar-menu-item has-dropdown">
@@ -136,6 +127,30 @@
                     <li class="sidebar-dropdown-menu-item">
                         <a href="#">
                             Ganti Password
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="sidebar-menu-item has-dropdown">
+                <a href="#">
+                    <i class="ri-window-line sidebar-menu-item-icon"></i>
+                    Admin
+                    <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
+                </a>
+                <ul class="sidebar-dropdown-menu">
+                    <li class="sidebar-dropdown-menu-item">
+                        <a href="{{ route('kasbon.index') }}">
+                            Kasbon Marketing
+                        </a>
+                    </li>
+                    <li class="sidebar-dropdown-menu-item">
+                        <a href="{{ route('progres.rekap-marketing') }}">
+                            Rekap Marketing
+                        </a>
+                    </li>
+                    <li class="sidebar-dropdown-menu-item">
+                        <a href="{{ route('hari-kerja.index') }}">
+                            Hari Kerja
                         </a>
                     </li>
                 </ul>
