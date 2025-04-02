@@ -416,3 +416,31 @@ nav {
   /* Pastikan modal berada di atas backdrop */
 
 /* end: Breakpoints */
+
+.table-container {
+    width: 100%;
+    overflow: hidden;
+}
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+.custom-table th, .custom-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    white-space: nowrap;
+}
+.custom-table th {
+    background-color: #333;
+    color: white;
+}
+@media (max-width: 600px) {
+    .custom-table {
+        font-size: 10px;
+    }
+    .custom-table th, .custom-table td {
+        padding: 4px;
+    }
+}

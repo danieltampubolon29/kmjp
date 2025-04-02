@@ -7,29 +7,34 @@
                 <x-alert-message></x-alert-message>
                 <div class="card shadow">
                     <div class="card-body">
-                        <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#validasiModal">
-                            Validasi Semua Data
-                        </button>
-                        <div class="table-responsive">
-                            <table class="table table-light table-striped table-hover text-center">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#validasiModal">
+                                    Validasi
+                                </button>
+                            </div>
+                            <div>
+                                <strong>Total</strong>  Rp. {{ number_format($totalNominal, 0, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="custom-table">
                                 <thead>
-                                    <tr class="table-dark text-center align-middle">
+                                    <tr>
                                         <th>NO</th>
                                         <th>NO ANGGOTA</th>
                                         <th>NAMA</th>
-                                        <th>TANGGAL</th>
                                         <th>NOMINAL</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($datas as $data)
-                                        <tr class="align-middle" style="white-space: nowrap;">
-                                            <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $data->anggota->no_anggota }}</td>
-                                            <td>{{ $data->anggota->nama }}</td>
-                                            <td>{{ $data->tanggal_pencairan }}</td>
-                                            <td>Rp. {{ number_format($data->nominal, 0, ',', '.') }},-</td>
-                                        </tr>
+                                    <tr data-href="{{ route('pencairan.show', $data->id) }}">
+                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $data->anggota->no_anggota }}</td>
+                                        <td>{{ $data->anggota->nama }}</td>
+                                        <td>Rp. {{ number_format($data->nominal, 0, ',', '.') }},-</td>
+                                    </tr>
                                     @endforeach
                                 </tbody>
                             </table>
@@ -67,6 +72,7 @@
                 </div>
             </div>
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="{{ asset('js/all/data-href.js') }}"></script>
         </x-slot>
     </x-bar.navbar>
 @endsection

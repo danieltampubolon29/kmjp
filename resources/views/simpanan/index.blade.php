@@ -33,7 +33,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($simpanans as $simpanan)
-                                        <tr data-href="{{ route('simpanan.show', $simpanan->id) }}">
+                                        <tr class="align-middle" style="white-space: nowrap;" data-href="{{ route('simpanan.show', $simpanan->id) }}">
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $simpanan->anggota->no_anggota }}</td>
                                             <td>{{ $simpanan->anggota->nama }}</td>

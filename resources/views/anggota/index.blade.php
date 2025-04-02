@@ -32,7 +32,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($anggotas as $anggota)
-                                        <tr data-href="{{ route('anggota.show', $anggota->id) }}">
+                                        <tr class="align-middle" style="white-space: nowrap;" data-href="{{ route('anggota.show', $anggota->id) }}">
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $anggota->no_anggota }}</td>
                                             <td>{{ $anggota->nama }}</td>

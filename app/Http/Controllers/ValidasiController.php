@@ -11,15 +11,17 @@ use Illuminate\Support\Facades\Auth;
 
 class ValidasiController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function pencairan()
     {
         $datas = Pencairan::where('marketing_id', Auth::id())
             ->whereNull('tanggal_laporan')
             ->paginate(10);
-        return view('validasi.pencairan', compact('datas'));
+
+        $totalNominal = Pencairan::where('marketing_id', Auth::id())
+            ->whereNull('tanggal_laporan')
+            ->sum('nominal');
+
+        return view('validasi.pencairan', compact('datas', 'totalNominal'));
     }
 
     public function angsuran()
@@ -27,7 +29,12 @@ class ValidasiController extends Controller
         $datas = Angsuran::where('marketing_id', Auth::id())
             ->whereNull('tanggal_laporan')
             ->paginate(10);
-        return view('validasi.angsuran', compact('datas'));
+
+        $totalNominal = Angsuran::where('marketing_id', Auth::id())
+            ->whereNull('tanggal_laporan')
+            ->sum('nominal');
+
+        return view('validasi.angsuran', compact('datas', 'totalNominal'));
     }
 
     public function simpanan()
@@ -35,7 +42,12 @@ class ValidasiController extends Controller
         $datas = Simpanan::where('marketing_id', Auth::id())
             ->whereNull('tanggal_laporan')
             ->paginate(10);
-        return view('validasi.simpanan', compact('datas'));
+
+        $totalNominal = Simpanan::where('marketing_id', Auth::id())
+            ->whereNull('tanggal_laporan')
+            ->sum('nominal');
+            
+        return view('validasi.simpanan', compact('datas', 'totalNominal'));
     }
 
     public function validasiPencairan(Request $request)

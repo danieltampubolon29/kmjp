@@ -1,8 +1,9 @@
 @extends('layouts.aplication')
 @section('title', 'Kasbon')
 @section('content')
+<link rel="stylesheet" href="{{ asset('css/table.css') }}">
     <x-bar.navbar>
-        Kasbon Harian Marketing
+        Kasbon Marketing
         <x-slot name="content">
             <div class="container mt-4">
                 <div class="card shadow">
@@ -36,7 +37,7 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($kasbons as $kasbon)
-                                        <tr data-href="{{ route('kasbon.show', $kasbon->id) }}">
+                                        <tr class="align-middle" style="white-space: nowrap;" data-href="{{ route('kasbon.show', $kasbon->id) }}">
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ \Carbon\Carbon::parse($kasbon->tanggal)->translatedFormat('d F Y') }}
                                             </td>

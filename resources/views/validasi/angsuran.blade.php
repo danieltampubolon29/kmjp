@@ -1,43 +1,50 @@
 @extends('layouts.aplication')
 @section('title', 'Validasi')
 @section('content')
-<x-bar.navbar>Validasi Angsuran
-    <x-slot name="content">
-        <div class="container mt-4">
-            <x-alert-message></x-alert-message>
-            <div class="card shadow">
-                <div class="card-body">
-                    <button class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#validasiModal">
-                        Validasi Semua Data
-                    </button>
-                    <div class="table-responsive">
-                        <table class="table table-light table-striped table-hover text-center">
-                            <thead>
-                                <tr class="table-dark text-center align-middle">
-                                    <th>NO</th>
-                                    <th>NO ANGGOTA</th>
-                                    <th>NAMA</th>
-                                    <th>NOMINAL</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($datas as $angsuran)
+    <x-bar.navbar>Validasi Angsuran
+        <x-slot name="content">
+            <div class="container mt-4">
+                <x-alert-message></x-alert-message>
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#validasiModal">
+                                    Validasi
+                                </button>
+                            </div>
+                            <div>
+                                <strong>Total</strong> Rp. {{ number_format($totalNominal, 0, ',', '.') }}
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="custom-table">
+                                <thead>
                                     <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $angsuran->pencairan->no_anggota }}</td>
-                                        <td>{{ $angsuran->pencairan->nama }}</td>
-                                        <td>Rp. {{ number_format($angsuran->nominal, 0, ',', '.') }},-</td>
+                                        <th>NO</th>
+                                        <th>NO ANGGOTA</th>
+                                        <th>NAMA</th>
+                                        <th>NOMINAL</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach ($datas as $angsuran)
+                                        <tr data-href="{{ route('angsuran.show', $angsuran->id) }}">
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $angsuran->pencairan->no_anggota }}</td>
+                                            <td>{{ $angsuran->pencairan->nama }}</td>
+                                            <td>Rp. {{ number_format($angsuran->nominal, 0, ',', '.') }},-</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        {{ $datas->links('pagination::bootstrap-5') }}
                     </div>
-                    {{ $datas->links('pagination::bootstrap-5') }}
                 </div>
             </div>
-        </div>
 
-        <div class="modal fade" id="validasiModal" tabindex="-1" aria-labelledby="validasiModalLabel"
+            <div class="modal fade" id="validasiModal" tabindex="-1" aria-labelledby="validasiModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -65,8 +72,8 @@
                     </div>
                 </div>
             </div>
-
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    </x-slot>
-</x-bar.navbar>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="{{ asset('js/all/data-href.js') }}"></script>
+        </x-slot>
+    </x-bar.navbar>
 @endsection

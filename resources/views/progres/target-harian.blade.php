@@ -6,22 +6,10 @@
             <div class="container mt-4">
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Daftar Pencairan {{ $currentDay }}</h5>
-                        <div>
-                            <a href="{{ route('pencairan.create') }}" class="btn btn-light"><i
-                                    class="ri-hand-coin-line"></i></i></a>
-                        </div>
+                        <h5 class="py-1 mb-0">Daftar Jatuh Tempo {{ $currentDay }}</h5>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('pencairan.index') }}" method="GET" class="d-flex mb-3">
-                            <div class="input-group">
-                                <input type="text" name="search" class="form-control" placeholder="Cari Pencairan"
-                                    value="{{ $search ?? '' }}">
-                                <button type="submit" class="btn btn-primary">Cari</button>
-                            </div>
-                        </form>
                         <x-alert-message></x-alert-message>
-
                         <div class="table-responsive">
                             <table class="table table-light table-striped table-hover text-center">
                                 <thead>

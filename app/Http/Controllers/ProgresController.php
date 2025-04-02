@@ -40,39 +40,17 @@ class ProgresController extends Controller
 
     public function targetHarian(Request $request)
 {
-    // Set locale ke bahasa Indonesia
     Carbon::setLocale('id');
-
-    // Mendapatkan nama hari dalam bahasa Indonesia
     $currentDay = Carbon::now()->isoFormat('dddd'); 
-
     $query = Pencairan::query();
-
-    // Filter berdasarkan role marketing
     if (Auth::user()->role === 'marketing') {
         $query->where('marketing_id', Auth::id());
     }
 
-    // Filter berdasarkan jatuh tempo yang sesuai dengan hari ini
     $query->where('jatuh_tempo', 'like', '%' . $currentDay . '%');
-
-    // Pencarian berdasarkan input search
-    $search = $request->input('search');
-    if ($search) {
-        $query->where(function ($q) use ($search) {
-            $q->whereHas('anggota', function ($qAnggota) use ($search) {
-                $qAnggota->where('no_anggota', 'like', '%' . $search . '%')
-                    ->orWhere('nama', 'like', '%' . $search . '%');
-            });
-            $q->orWhere('tanggal_pencairan', 'like', '%' . $search . '%');
-        });
-    }
-
-    // Paginasi hasil query
+    $query->where('status', 0);
     $pencairans = $query->orderBy('created_at', 'desc')->paginate(10);
-
-    // Kirim data ke view
-    return view('progres.target-harian', compact('pencairans', 'search', 'currentDay'));
+    return view('progres.target-harian', compact('pencairans', 'currentDay'));
 }
 
     // rekap data

@@ -99,7 +99,7 @@
             </li>
             <li class="sidebar-menu-item has-dropdown">
                 <a href="#">
-                    <i class="ri-window-line sidebar-menu-item-icon"></i>
+                    <i class="ri-time-line sidebar-menu-item-icon"></i>
                     Progres
                     <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
                 </a>
@@ -183,4 +183,3 @@
         </ul>
     </div>
     <div class="sidebar-overlay"></div>
-    <!-- end: Sidebar -->
