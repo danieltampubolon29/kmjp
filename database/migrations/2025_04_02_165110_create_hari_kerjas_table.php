@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->date('tanggal')->unique(); 
             $table->boolean('status')->default(false);
-            $table->string('description')->nullable(); 
+            $table->string('deskripsi')->nullable(); 
             $table->timestamps();
         });
     }

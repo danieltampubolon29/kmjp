@@ -155,6 +155,25 @@
                     </li>
                 </ul>
             </li>
+            <li class="sidebar-menu-item has-dropdown">
+                <a href="#">
+                    <i class="ri-window-line sidebar-menu-item-icon"></i>
+                    Kalender
+                    <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
+                </a>
+                <ul class="sidebar-dropdown-menu">
+                    <li class="sidebar-dropdown-menu-item">
+                        <a href="">
+                            Hari Kerja
+                        </a>
+                    </li>
+                    <li class="sidebar-dropdown-menu-item">
+                        <a href="{{ route('hari-kerja.index') }}">
+                            Setting Libur
+                        </a>
+                    </li>
+                </ul>
+            </li>
             <li class="sidebar-menu-item">
                 <a href="#" id="logout-link">
                     <i class="ri-logout-box-line sidebar-menu-item-icon"></i>

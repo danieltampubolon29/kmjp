@@ -13,8 +13,7 @@ class HariKerja extends Model
     protected $fillable = [
         'tanggal',      
         'status',     
-        'description' 
+        'deskripsi' 
     ];
 
-    
 }
