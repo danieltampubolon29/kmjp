@@ -11,7 +11,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="card border-1 shadow-sm p-3">
-                                    <h5 class="card-title">Kalender</h5>
+                                    <h5 class="card-title">Kalender Hari Kerja</h5>
                                     <div class="wrapper">
                                         <header>
                                             <p class="current-date mt-3"></p>

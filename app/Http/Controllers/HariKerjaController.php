@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\HariKerja;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
 
 class HariKerjaController extends Controller
 {
@@ -16,8 +15,10 @@ class HariKerjaController extends Controller
 
         return view('admin.hariKerja.index', compact('holidays'));
     }
+
     public function store(Request $request)
     {
+        // Validasi input
         $validated = $request->validate([
             'tanggal' => 'required|array',
             'tanggal.*' => 'required|date',
@@ -25,15 +26,23 @@ class HariKerjaController extends Controller
         ]);
 
         foreach ($validated['tanggal'] as $date) {
-            HariKerja::updateOrCreate(
-                ['tanggal' => $date],
-                [
+            // Cek apakah tanggal sudah ada di database
+            $existingHoliday = HariKerja::where('tanggal', $date)->first();
+
+            if ($existingHoliday) {
+                // Jika sudah ada, hapus data tersebut
+                $existingHoliday->delete();
+            } else {
+                // Jika belum ada, tambahkan sebagai hari libur baru
+                HariKerja::create([
+                    'tanggal' => $date,
                     'status' => true,
                     'deskripsi' => $request->deskripsi,
-                ]
-            );
+                ]);
+            }
         }
 
-        return redirect()->route('hari-kerja.index')->with('success', 'Hari Libur Berhasil Ditambahkan!');
+        // Redirect dengan pesan sukses
+        return redirect()->route('hari-kerja.index')->with('success', 'Hari Libur Berhasil Diupdate!');
     }
 }
