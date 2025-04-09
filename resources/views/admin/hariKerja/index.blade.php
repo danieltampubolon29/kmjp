@@ -368,13 +368,22 @@
 
                 const handleDateClick = (event) => {
                     const selectedDate = event.target.getAttribute('data-date');
+                    const liElement = event.target;
+
                     if (selectedDates.includes(selectedDate)) {
                         selectedDates = selectedDates.filter(date => date !== selectedDate);
-                        event.target.classList.remove("selected");
+                        liElement.classList.remove("active");
+
+                        if (holidays.some(holiday => holiday.tanggal === selectedDate)) {
+                            liElement.classList.add("holiday");
+                        }
                     } else {
                         selectedDates.push(selectedDate);
-                        event.target.classList.add("selected");
+
+                        liElement.classList.remove("holiday");
+                        liElement.classList.add("active");
                     }
+
                     updateSelectedDatesDisplay();
                 };
 
