@@ -16,27 +16,23 @@ class HariKerjaController extends Controller
 
         return view('admin.hariKerja.index', compact('holidays'));
     }
-
-
     public function store(Request $request)
     {
-       $validasi =  $request->validate([
-            'tanggal' => 'required|date',
+        $validated = $request->validate([
+            'tanggal' => 'required|array',
+            'tanggal.*' => 'required|date',
             'deskripsi' => 'nullable|string|max:255',
         ]);
 
-        $hariKerja = HariKerja::where('tanggal', $request->tanggal)->first();
-
-        if ($hariKerja) {
-            $hariKerja->delete();
-            return redirect()->route('hari-kerja.index')->with('success', 'Hari Libur Berhasil Diperbarui!');
+        foreach ($validated['tanggal'] as $date) {
+            HariKerja::updateOrCreate(
+                ['tanggal' => $date],
+                [
+                    'status' => true,
+                    'deskripsi' => $request->deskripsi,
+                ]
+            );
         }
-
-        HariKerja::create([
-            'tanggal' => $request->tanggal,
-            'status' => true,
-            'deskripsi' => $request->deskripsi
-        ]);
 
         return redirect()->route('hari-kerja.index')->with('success', 'Hari Libur Berhasil Ditambahkan!');
     }

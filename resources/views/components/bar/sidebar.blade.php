@@ -148,11 +148,6 @@
                             Rekap Marketing
                         </a>
                     </li>
-                    <li class="sidebar-dropdown-menu-item">
-                        <a href="{{ route('hari-kerja.index') }}">
-                            Hari Kerja
-                        </a>
-                    </li>
                 </ul>
             </li>
             <li class="sidebar-menu-item has-dropdown">
