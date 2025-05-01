@@ -3,7 +3,7 @@
 @section('content')
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">
-    <x-bar.navbar>Hari Libur
+    <x-bar.navbar> Hari Kerja
         <x-slot name="content">
             <div class="container mt-4">
                 <div class="card shadow">
@@ -11,7 +11,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="card border-1 shadow-sm p-3">
-                                    <h5 class="card-title">Kalender Hari Kerja</h5>
+                                    <h5 class="card-title">Kalender</h5>
                                     <div class="wrapper">
                                         <header>
                                             <p class="current-date mt-3"></p>
@@ -47,6 +47,7 @@
                                         </ul>
                                     </div>
                                 </div>
+                                @if (auth()->check() && auth()->user()->role === 'admin')
                                 <div class="card border-1 shadow-sm p-3">
                                     <div class="mt-2">
                                         <x-alert-message></x-alert-message>
@@ -70,213 +71,14 @@
                                         <button type="submit" class="btn btn-primary">Simpan</button>
                                     </form>
                                 </div>
+                                @endif
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <style>
-                .calendar .days li.holiday::before {
-                    position: absolute;
-                    background: red;
-                    content: "";
-                    left: 50%;
-                    top: 50%;
-                    height: 40px;
-                    width: 40px;
-                    z-index: -1;
-                    border-radius: 50%;
-                    transform: translate(-50%, -50%);
-                }
-
-                .calendar .days li.holiday {
-                    color: white;
-                }
-
-                .calendar .days li.holiday:hover::before {
-                    background: rgb(190, 1, 1);
-                }
-
-                :root {
-                    --primary-color: var(--bs-primary);
-                }
-
-                .modal-dialog {
-                    max-width: 500px;
-                    width: 100%;
-                }
-
-                .modal-content {
-                    border-radius: 10px;
-                    overflow: hidden;
-                }
-
-                .modal-body {
-                    padding: 0 !important;
-                }
-
-                .wrapper {
-                    width: 100%;
-                    background: #fff;
-                    border-radius: 10px;
-                    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
-                }
-
-                .wrapper header {
-                    display: flex;
-                    align-items: center;
-                    padding: 20px;
-                    justify-content: space-between;
-                    background: white;
-                    color: black;
-                    border-top-left-radius: 10px;
-                    border-top-right-radius: 10px;
-                }
-
-                header .icons {
-                    display: flex;
-                }
-
-                header .icons span {
-                    height: 38px;
-                    width: 38px;
-                    cursor: pointer;
-                    color: black;
-                    text-align: center;
-                    line-height: 38px;
-                    font-size: 1.9rem;
-                    user-select: none;
-                    border-radius: 50%;
-                }
-
-                header .icons span:hover {
-                    background: rgba(255, 255, 255, 0.2);
-                }
-
-                header .current-date {
-                    font-size: 1.45rem;
-                    font-weight: 500;
-                }
-
-                .calendar {
-                    padding: 20px;
-                    margin-left: -35px;
-                }
-
-                .calendar ul {
-                    display: flex;
-                    flex-wrap: wrap;
-                    list-style: none;
-                    text-align: center;
-                }
-
-                .calendar .days {
-                    margin-bottom: 20px;
-                }
-
-                .calendar li {
-                    color: #333;
-                    width: calc(100% / 7);
-                    font-size: 1.1rem;
-                }
-
-                .calendar .weeks li {
-                    font-weight: 600;
-                    cursor: default;
-                }
-
-                .calendar .days li {
-                    z-index: 1;
-                    cursor: pointer;
-                    position: relative;
-                    margin-top: 30px;
-                }
-
-                .days li.inactive {
-                    color: #aaa;
-                }
-
-                .days li.active {
-                    color: #fff;
-                }
-
-                .days li::before {
-                    position: absolute;
-                    content: "";
-                    left: 50%;
-                    top: 50%;
-                    height: 40px;
-                    width: 40px;
-                    z-index: -1;
-                    border-radius: 50%;
-                    transform: translate(-50%, -50%);
-                }
-
-                .days li.active::before {
-                    background: var(--primary-color);
-                }
-
-                .days li:not(.active):hover::before {
-                    background: var(--primary-color);
-                }
-
-                #selected-dates .selected-date {
-                    color: red;
-                }
-
-                @media (max-width: 768px) {
-                    .calendar ul {
-                        font-size: 0.9rem;
-                    }
-
-                    .calendar li {
-                        font-size: 0.85rem;
-                    }
-
-                    .days li::before {
-                        height: 30px;
-                        width: 30px;
-                    }
-
-                    header .current-date {
-                        font-size: 1.2rem;
-                    }
-
-                    header .icons span {
-                        font-size: 1.5rem;
-                        height: 30px;
-                        width: 30px;
-                        line-height: 30px;
-                    }
-                }
-
-                @media (max-width: 480px) {
-                    .calendar ul {
-                        font-size: 0.8rem;
-                    }
-
-                    .calendar li {
-                        font-size: 0.75rem;
-                    }
-
-                    .days li::before {
-                        height: 25px;
-                        width: 25px;
-                    }
-
-                    header .current-date {
-                        font-size: 1rem;
-                    }
-
-                    header .icons span {
-                        font-size: 1.2rem;
-                        height: 25px;
-                        width: 25px;
-                        line-height: 25px;
-                    }
-                }
-            </style>
+            
             <script>
                 // Array untuk menyimpan tanggal yang dipilih
                 let selectedDates = [];
@@ -472,6 +274,7 @@
 
                 renderCalendar();
             </script>
+            <link rel="stylesheet" href="{{ asset('css/hariKerja/styles.css') }}">
         </x-slot>
     </x-bar.navbar>
 @endsection

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Anggota;
 use App\Models\Angsuran;
 use App\Models\Simpanan;
@@ -39,7 +40,16 @@ class PencairanController extends Controller
 
     public function create()
     {
-        return view('pencairan.create');
+        $currentUser = Auth::user();
+        $marketingsQuery = User::where('role', 'marketing');
+
+        if ($currentUser->role === 'marketing') {
+            $marketingsQuery->where('id', '!=', $currentUser->id);
+        }
+
+        $marketings = $marketingsQuery->pluck('name', 'id');
+
+        return view('pencairan.create', compact('marketings', 'currentUser'));
     }
 
     public function show($id)
@@ -56,8 +66,16 @@ class PencairanController extends Controller
 
     public function edit($id)
     {
+        $currentUser = Auth::user();
+        $marketingsQuery = User::where('role', 'marketing');
+
+        if ($currentUser->role === 'marketing') {
+            $marketingsQuery->where('id', '!=', $currentUser->id);
+        }
+
+        $marketings = $marketingsQuery->pluck('name', 'id');
         $pencairan = Pencairan::findOrFail($id);
-        return view('pencairan.edit', compact('pencairan'));
+        return view('pencairan.edit', compact('pencairan', 'marketings', 'currentUser'));
     }
 
     public function store(Request $request)
@@ -71,13 +89,13 @@ class PencairanController extends Controller
             'tenor' => 'required|integer|min:1',
             'jatuh_tempo' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Harian',
             'tanggal_pencairan' => 'required|date',
-            'marketing' => 'required|in:Hitler,Jubrito,Hendri',
             'latitude' => 'nullable|string',
             'longitude' => 'nullable|string',
         ]);
-
-
-        $validated['marketing_id'] = Auth::id();
+        $marketingId = $request->input('marketing_id');
+        $marketingName = User::findOrFail($marketingId)->name;
+        $validated['marketing_id'] = $marketingId;
+        $validated['marketing'] = $marketingName;
 
         $lastPinjaman = Pencairan::where('anggota_id', $request->anggota_id)
             ->orderBy('pinjaman_ke', 'desc')
@@ -111,58 +129,63 @@ class PencairanController extends Controller
     }
 
     public function update(Request $request, Pencairan $pencairan)
-    {
-        $validated = $request->validate([
-            'anggota_id' => 'required|exists:anggota,id',
-            'no_anggota' => 'required',
-            'nama' => 'required',
-            'produk' => 'required|in:Harian,Mingguan',
-            'nominal' => 'required|numeric|min:0',
-            'tenor' => 'required|integer|min:1',
-            'jatuh_tempo' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Harian',
-            'tanggal_pencairan' => 'required|date',
-            'marketing' => 'required|in:Hitler,Jubrito,Hendri',
-        ]);
+{
+    // Validasi input
+    $validated = $request->validate([
+        'anggota_id' => 'required|exists:anggota,id',
+        'no_anggota' => 'required',
+        'nama' => 'required',
+        'produk' => 'required|in:Harian,Mingguan',
+        'nominal' => 'required|numeric|min:0',
+        'tenor' => 'required|integer|min:1',
+        'jatuh_tempo' => 'required|in:Senin,Selasa,Rabu,Kamis,Jumat,Harian',
+        'tanggal_pencairan' => 'required|date',
+        'marketing_id' => 'required|exists:users,id', // Pastikan marketing_id valid
+    ]);
 
-        $sisa_kredit = $validated['nominal'] * 0.2 + $validated['nominal'];
-        $validated['sisa_kredit'] = $sisa_kredit;
 
-        $anggotaLama = Anggota::findOrFail($pencairan->anggota_id);
-        $nominalLama = $pencairan->nominal;
+    $marketingId = $request->input('marketing_id');
+    $marketingName = User::findOrFail($marketingId)->name;
 
-        $simpananPokokLama = $nominalLama * 0.05;
+    $validated['marketing_id'] = $marketingId;
+    $validated['marketing'] = $marketingName;
 
-        $anggotaLama->simpanan = ($anggotaLama->simpanan ?? 0) - $simpananPokokLama;
-        $anggotaLama->save();
+    $sisa_kredit = $validated['nominal'] * 0.2 + $validated['nominal'];
+    $validated['sisa_kredit'] = $sisa_kredit;
 
-        $pencairan->update($validated);
+    $anggotaLama = Anggota::findOrFail($pencairan->anggota_id);
+    $nominalLama = $pencairan->nominal;
+    $simpananPokokLama = $nominalLama * 0.05;
+    $anggotaLama->simpanan = ($anggotaLama->simpanan ?? 0) - $simpananPokokLama;
+    $anggotaLama->save();
 
-        $simpananPokokBaru = $validated['nominal'] * 0.05;
+    $pencairan->update($validated);
 
-        $anggotaBaru = Anggota::findOrFail($validated['anggota_id']);
-        $anggotaBaru->simpanan = ($anggotaBaru->simpanan ?? 0) + $simpananPokokBaru;
-        $anggotaBaru->save();
+    $simpananPokokBaru = $validated['nominal'] * 0.05;
+    $anggotaBaru = Anggota::findOrFail($validated['anggota_id']);
+    $anggotaBaru->simpanan = ($anggotaBaru->simpanan ?? 0) + $simpananPokokBaru;
+    $anggotaBaru->save();
 
-        $simpananData = [
-            'anggota_id' => $validated['anggota_id'],
-            'tanggal_transaksi' => $validated['tanggal_pencairan'],
-            'jenis_transaksi' => 'SETOR',
-            'jenis_simpanan' => 'POKOK',
-            'nominal' => $simpananPokokBaru,
-            'marketing_id' => Auth::id(),
-            'pencairan_id' => $pencairan->id,
-            'is_locked' => true,
-        ];
+    $simpananData = [
+        'anggota_id' => $validated['anggota_id'],
+        'tanggal_transaksi' => $validated['tanggal_pencairan'],
+        'jenis_transaksi' => 'SETOR',
+        'jenis_simpanan' => 'POKOK',
+        'nominal' => $simpananPokokBaru,
+        'marketing_id' => $validated['marketing_id'], 
+        'pencairan_id' => $pencairan->id,
+        'is_locked' => true,
+    ];
 
-        $simpanan = Simpanan::where('pencairan_id', $pencairan->id)->first();
-        if ($simpanan) {
-            $simpanan->update($simpananData);
-        } else {
-            Simpanan::create($simpananData);
-        }
-
-        return redirect()->route('pencairan.show', ['pencairan' => $pencairan->id])->with('success', 'Data pencairan berhasil diperbarui.');
+    $simpanan = Simpanan::where('pencairan_id', $pencairan->id)->first();
+    if ($simpanan) {
+        $simpanan->update($simpananData);
+    } else {
+        Simpanan::create($simpananData);
     }
+
+    return redirect()->route('pencairan.show', ['pencairan' => $pencairan->id])->with('success', 'Data pencairan berhasil diperbarui.');
+}
 
     public function destroy($id)
     {
@@ -278,12 +301,18 @@ class PencairanController extends Controller
     {
         $query = $request->input('q');
 
-        $anggotas = Anggota::where('marketing_id', Auth::id())
-            ->where(function ($q) use ($query) {
-                $q->where('nama', 'LIKE', "%$query%")
-                    ->orWhere('no_anggota', 'LIKE', "%$query%");
-            })
-            ->get(['id', 'no_anggota', 'nama']);
+        $anggotasQuery = Anggota::query();
+
+        if (Auth::user()->role === 'marketing') {
+            $anggotasQuery->where('marketing_id', Auth::id());
+        }
+
+        $anggotasQuery->where(function ($q) use ($query) {
+            $q->where('nama', 'LIKE', "%$query%")
+                ->orWhere('no_anggota', 'LIKE', "%$query%");
+        });
+
+        $anggotas = $anggotasQuery->get(['id', 'no_anggota', 'nama']);
 
         return response()->json($anggotas);
     }
@@ -291,16 +320,45 @@ class PencairanController extends Controller
     public function getPencairanData(Request $request)
     {
         $anggotaId = $request->input('anggota_id');
-
         if (!$anggotaId) {
             return response()->json(['error' => 'ID Anggota tidak ditemukan'], 400);
         }
-
-        $pencairan = Pencairan::where('anggota_id', $anggotaId)
-            ->where('marketing_id', Auth::id())
-            ->select('id', 'pinjaman_ke', 'tanggal_pencairan', 'nominal', 'sisa_kredit', 'status')
+        $query = Pencairan::where('anggota_id', $anggotaId);
+        if (Auth::user()->role !== 'admin') {
+            $query->where('marketing_id', Auth::id());
+        }
+        $pencairan = $query->select('id', 'pinjaman_ke', 'tanggal_pencairan', 'nominal', 'sisa_kredit', 'status')
             ->get();
 
         return response()->json($pencairan);
+    }
+
+    public function getPencairan($id)
+    {
+        $pencairan = Pencairan::findOrFail($id);
+        $angsurans = Angsuran::where('pencairan_id', $id)->orderBy('angsuran_ke', 'asc')->get();
+
+        $isSequential = true;
+        for ($i = 1; $i <= $angsurans->count(); $i++) {
+            if ($angsurans[$i - 1]->angsuran_ke !== $i) {
+                $isSequential = false;
+                break;
+            }
+        }
+
+        $nominalWithInterest = $pencairan->nominal * 1.2;
+        $calculatedNominal = $nominalWithInterest / $pencairan->tenor;
+
+        return response()->json([
+            'no_anggota' => $pencairan->no_anggota,
+            'nama' => $pencairan->nama,
+            'pinjaman_ke' => $pencairan->pinjaman_ke,
+            'produk' => $pencairan->produk,
+            'tenor' => $pencairan->tenor,
+            'sisa_kredit' => number_format($pencairan->sisa_kredit, 0, ',', '.'), 
+            'angsuran_ke' => $angsurans->count() + 1,
+            'is_sequential' => $isSequential,
+            'calculated_nominal' => number_format($calculatedNominal, 0, ',', '.'), 
+        ]);
     }
 }

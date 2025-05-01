@@ -79,7 +79,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/hari-kerja', [HariKerjaController::class, 'index'])->name('hari-kerja.index');
     Route::post('/hari-kerja/store', [HariKerjaController::class, 'store'])->name('hari-kerja.store');
     
-
     // route dashboard marketing cek data
     Route::get('/get-simpanan-data', [SimpananController::class, 'getSimpananData'])->name('get.simpanan.data');
     Route::get('/get-simpanan-transactions', [SimpananController::class, 'getTransactions']);
@@ -91,6 +90,7 @@ Route::middleware('auth')->group(function () {
         // angsuran 
     Route::get('/laporan-angsuran', [LaporanController::class, 'angsuran'])->name('laporan.angsuran');
     Route::post('/laporan/get-angsuran-by-date', [LaporanController::class, 'getAngsuranByDate']);
+    Route::get('/api/pencairan/{id}', [PencairanController::class, 'getPencairan']);
         
         // pencairan
     Route::get('/laporan-pencairan', [LaporanController::class, 'pencairan'])->name('laporan.pencairan');

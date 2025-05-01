@@ -22,7 +22,8 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="no_anggota" class="form-label">No Anggota</label>
-                                    <input type="text" name="no_anggota" id="no_anggota" class="form-control" required readonly>
+                                    <input type="text" name="no_anggota" id="no_anggota" class="form-control" required
+                                        readonly>
                                 </div>
                             </div>
                             <input type="hidden" name="anggota_id" id="anggota_id">
@@ -30,7 +31,8 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="nama" class="form-label">Nama Anggota</label>
-                                    <input type="text" name="nama" id="nama" class="form-control" required readonly>
+                                    <input type="text" name="nama" id="nama" class="form-control" required
+                                        readonly>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="pinjaman_ke" class="form-label">Pinjaman Ke</label>
@@ -73,16 +75,25 @@
                                     <input type="date" id="tanggal_pencairan" name="tanggal_pencairan"
                                         class="form-control" value="{{ date('Y-m-d') }}" required>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="marketing" class="form-label">Marketing</label>
-                                    <select id="marketing" name="marketing" class="form-control" required>
-                                        <option value="Hitler">Hitler</option>
-                                        <option value="Jubrito">Jubrito</option>
-                                        <option value="Hendri">Hendri</option>
-                                    </select>
-                                </div>
+                                @if (Auth::user()->role === 'admin')
+                                    <div class="col-md-6 mb-3">
+                                        <label for="marketing" class="form-label">Marketing</label>
+                                        <select id="marketing" name="marketing_id" class="form-control" required>
+                                            @if ($currentUser->role === 'marketing')
+                                                <option value="{{ $currentUser->id }}" selected>{{ $currentUser->name }}
+                                                </option>
+                                            @endif
+
+                                            @foreach ($marketings as $id => $name)
+                                                <option value="{{ $id }}">{{ $name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                @else
+                                    <input type="hidden" name="marketing_id" value="{{ Auth::id() }}">
+                                    <input type="hidden" name="marketing" value="{{ Auth::user()->name }}">
+                                @endif
                             </div>
-                            <input type="hidden" name="marketing_id" id="marketing_id" value="{{ auth()->id() }}">
                             <input type="hidden" name="latitude" id="latitude">
                             <input type="hidden" name="longitude" id="longitude">
                         </div>

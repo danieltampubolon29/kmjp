@@ -24,18 +24,20 @@
                                     <label for="jenis_transaksi" class="form-label">Jenis Transaksi</label>
                                     <select id="jenis_transaksi" name="jenis_transaksi" class="form-control" required>
                                         <option value="001 - Angsuran">001 - Angsuran</option>
+                                        <?php
+                                            if (Auth::user()->role !== "marketing"): ?>
                                         <option value="009 - Pemutihan">009 - Pemutihan</option>
+                                        <?php endif; ?>
                                     </select>
                                 </div>
-                                
+
                             </div>
-                            <input type="hidden" name="pencairan_id" id="pencairan_id">
+                            <input type="hidden" name="pencairan_id" id="pencairan_id" value="{{ $pencairanId ?? '' }}">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="angsuran_ke" class="form-label">Angsuran Ke</label>
                                     <input type="text" id="angsuran_ke" name="angsuran_ke" class="form-control" readonly>
                                 </div>
-                                
                             </div>
 
                             <div class="row">
@@ -76,7 +78,7 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="sisa_kredit" class="form-label">Sisa Kredit</label>
-                                    <input type="text"  id="sisa_kredit" class=" text-danger form-control" readonly>
+                                    <input type="text" id="sisa_kredit" class=" text-danger form-control" readonly>
                                 </div>
                             </div>
                             <input type="hidden" name="latitude" id="latitude">
@@ -96,6 +98,8 @@
                     </form>
                 </div>
             </div>
+
+            <script src="{{ asset('js/angsuran/target-angsuran.js') }}"></script>
             <script src="{{ asset('js/pencairan/nominal.js') }}"></script>
             <script src="{{ asset('js/all/reset-form.js') }}"></script>
             <script src="{{ asset('js/all/geolokasi.js') }}"></script>

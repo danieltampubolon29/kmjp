@@ -61,7 +61,7 @@
                                     masuk ke laporan Anda sesuai tanggal yang Anda pilih.</h6>
                                 <div class="mb-3">
                                     <label for="tanggal_laporan" class="form-label">Tanggal Laporan</label>
-                                    <input type="date" class="form-control" id="tanggal_laporan" name="tanggal_laporan"
+                                    <input type="date" value="{{ date('Y-m-d') }}" class="form-control" id="tanggal_laporan" name="tanggal_laporan"
                                         required>
                                 </div>
                             </div>

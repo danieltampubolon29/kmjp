@@ -18,7 +18,6 @@ class HariKerjaController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi input
         $validated = $request->validate([
             'tanggal' => 'required|array',
             'tanggal.*' => 'required|date',
@@ -26,14 +25,11 @@ class HariKerjaController extends Controller
         ]);
 
         foreach ($validated['tanggal'] as $date) {
-            // Cek apakah tanggal sudah ada di database
             $existingHoliday = HariKerja::where('tanggal', $date)->first();
 
             if ($existingHoliday) {
-                // Jika sudah ada, hapus data tersebut
                 $existingHoliday->delete();
             } else {
-                // Jika belum ada, tambahkan sebagai hari libur baru
                 HariKerja::create([
                     'tanggal' => $date,
                     'status' => true,
@@ -41,8 +37,6 @@ class HariKerjaController extends Controller
                 ]);
             }
         }
-
-        // Redirect dengan pesan sukses
         return redirect()->route('hari-kerja.index')->with('success', 'Hari Libur Berhasil Diupdate!');
     }
 }

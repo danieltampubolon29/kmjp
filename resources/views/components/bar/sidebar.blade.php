@@ -101,7 +101,7 @@
                 <ul class="sidebar-dropdown-menu">
                     <li class="sidebar-dropdown-menu-item">
                         <a href="{{ route('progres.target-harian') }}">
-                            Target Harian
+                            Jatuh Tempo
                         </a>
                     </li>
                     <li class="sidebar-dropdown-menu-item">
@@ -109,7 +109,7 @@
                             Rekap Data
                         </a>
                     </li>
-                    
+
                 </ul>
             </li>
             <li class="sidebar-menu-item has-dropdown">
@@ -158,14 +158,15 @@
                 </a>
                 <ul class="sidebar-dropdown-menu">
                     <li class="sidebar-dropdown-menu-item">
-                        <a href="">
-                            Hari Kerja
-                        </a>
-                    </li>
-                    <li class="sidebar-dropdown-menu-item">
-                        <a href="{{ route('hari-kerja.index') }}">
-                            Setting Libur
-                        </a>
+                        @if (auth()->check() && auth()->user()->role === 'admin')
+                            <a href="{{ route('hari-kerja.index') }}">
+                                Setting Libur
+                            </a>
+                        @else
+                            <a href="{{ route('hari-kerja.index') }}">
+                                Hari Kerja
+                            </a>
+                        @endif
                     </li>
                 </ul>
             </li>

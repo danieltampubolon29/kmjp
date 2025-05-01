@@ -38,21 +38,37 @@ class ProgresController extends Controller
     }
 
 
+
     public function targetHarian(Request $request)
-{
-    Carbon::setLocale('id');
-    $currentDay = Carbon::now()->isoFormat('dddd'); 
-    $query = Pencairan::query();
-    if (Auth::user()->role === 'marketing') {
-        $query->where('marketing_id', Auth::id());
+    {
+        Carbon::setLocale('id');
+        $currentDay = Carbon::now()->isoFormat('dddd'); // Hari sekarang dalam bahasa Indonesia
+
+        $query = Pencairan::query();
+
+        if (Auth::user()->role === 'marketing') {
+            $query->where('marketing_id', Auth::id());
+        }
+        $query->where('jatuh_tempo', 'like', '%' . $currentDay . '%')
+            ->orWhere('jatuh_tempo', 'harian')
+            ->where('status', 0);
+        $pencairans = $query->get();
+        $filteredPencairans = $pencairans->filter(function ($pencairan) {
+            return !$pencairan->angsuran()
+                ->whereDate('tanggal_angsuran', Carbon::today())
+                ->exists();
+        });
+
+        $paginatedPencairans = new \Illuminate\Pagination\LengthAwarePaginator(
+            $filteredPencairans,
+            $filteredPencairans->count(),
+            10,
+            $request->input('page', 1),
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        return view('progres.target-harian', compact('paginatedPencairans', 'currentDay'));
     }
-
-    $query->where('jatuh_tempo', 'like', '%' . $currentDay . '%');
-    $query->where('status', 0);
-    $pencairans = $query->orderBy('created_at', 'desc')->paginate(10);
-    return view('progres.target-harian', compact('pencairans', 'currentDay'));
-}
-
     // rekap data
     public function getPencairanData(Request $request)
     {

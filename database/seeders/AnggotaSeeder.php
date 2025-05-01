@@ -22,7 +22,7 @@ class AnggotaSeeder extends Seeder
                 'no_hp' => $faker->phoneNumber(),
                 'tanggal_daftar' => $faker->date(),
                 'marketing_id' => rand(2,3), 
-                'is_locked' => $faker->boolean(),
+                'is_locked' => 0,
                 'simpanan' => 0,
                 'foto_ktp' => null,
                 'foto_kk' => null,

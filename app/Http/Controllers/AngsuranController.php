@@ -39,14 +39,15 @@ class AngsuranController extends Controller
     }
 
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('angsuran.create');
+        $pencairanId = $request->query('pencairan_id');
+        return view('angsuran.create', compact('pencairanId'));
     }
-
 
     public function store(Request $request)
     {
+        $pencairan = Pencairan::findOrFail($request->pencairan_id);
         $request->validate([
             'pencairan_id' => 'required|exists:pencairan,id',
             'angsuran_ke' => 'required|integer|min:1',
@@ -57,18 +58,13 @@ class AngsuranController extends Controller
             'longitude' => 'nullable|string',
         ]);
 
-        $pencairan = Pencairan::findOrFail($request->pencairan_id);
-        $lastAngsuran = Angsuran::where('pencairan_id', $request->pencairan_id)
-            ->orderBy('angsuran_ke', 'desc')
-            ->first();
-        $angsuranKe = $lastAngsuran ? $lastAngsuran->angsuran_ke + 1 : 1;
-
         if ($pencairan->sisa_kredit < $request->nominal) {
             return redirect()->back()->with('error', 'Nominal angsuran melebihi sisa kredit.');
         }
+
         $angsuran = Angsuran::create([
             'pencairan_id' => $request->pencairan_id,
-            'angsuran_ke' => $angsuranKe,
+            'angsuran_ke' => $request->angsuran_ke,
             'jenis_transaksi' => $request->jenis_transaksi,
             'nominal' => $request->nominal,
             'tanggal_angsuran' => $request->tanggal_angsuran,

@@ -15,7 +15,6 @@ class PencairanSeeder extends Seeder
     {
         $faker = Faker::create(); 
 
-        // Ambil daftar anggota dan marketing yang tersedia
         $anggotas = Anggota::all(['id', 'no_anggota', 'nama'])->toArray();
         $users = User::where('role', 'marketing')->pluck('id')->toArray();
 
@@ -23,19 +22,16 @@ class PencairanSeeder extends Seeder
             return;
         }
 
-        for ($i = 1; $i <= 30; $i++) { 
-            // Pilih anggota secara acak
+        for ($i = 1; $i <= 50; $i++) { 
             $anggota = $faker->randomElement($anggotas);
             $marketingId = $faker->randomElement($users);
 
-            // Ambil pinjaman terakhir untuk menentukan pinjaman_ke
             $lastPinjaman = Pencairan::where('anggota_id', $anggota['id'])
                 ->orderBy('pinjaman_ke', 'desc')
                 ->first();
 
             $pinjamanKe = $lastPinjaman ? $lastPinjaman->pinjaman_ke + 1 : 1;
 
-            // Tentukan nominal dan sisa kredit
             $nominal = $faker->numberBetween(500000, 5000000);
             $sisa_kredit = (int) ($nominal * 1.2);
 
