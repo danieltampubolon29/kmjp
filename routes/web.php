@@ -71,7 +71,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/rekap-data/get-pencairan-data', [ProgresController::class, 'getPencairanData'])->name('progres.get-pencairan-data');
         // marketing 
     Route::get('/rekap-marketing', [ProgresController::class, 'rekapMarketing'])->name('progres.rekap-marketing');
-    Route::get('/rekap-data/get-marketing-data', [ProgresController::class, 'getRekapData'])->name('progres.get-marketing-data');
     Route::get('/rekap-data/get-rekap-marketing', [ProgresController::class, 'getRekapMarketing']);
 
     // target harian

@@ -99,17 +99,31 @@
                     <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
                 </a>
                 <ul class="sidebar-dropdown-menu">
-                    <li class="sidebar-dropdown-menu-item">
-                        <a href="{{ route('progres.target-harian') }}">
-                            Jatuh Tempo
-                        </a>
-                    </li>
-                    <li class="sidebar-dropdown-menu-item">
-                        <a href="{{ route('progres.rekap-data') }}">
-                            Rekap Data
-                        </a>
-                    </li>
-
+                    @if (Auth::check())
+                        @if (Auth::user()->role === 'admin')
+                            <li class="sidebar-dropdown-menu-item">
+                                <a href="{{ route('kasbon.index') }}">
+                                    Kasbon Marketing
+                                </a>
+                            </li>
+                            <li class="sidebar-dropdown-menu-item">
+                                <a href="{{ route('progres.rekap-marketing') }}">
+                                    Rekap Marketing
+                                </a>
+                            </li>
+                        @elseif(Auth::user()->role === 'marketing')
+                            <li class="sidebar-dropdown-menu-item">
+                                <a href="{{ route('progres.target-harian') }}">
+                                    Jatuh Tempo
+                                </a>
+                            </li>
+                            <li class="sidebar-dropdown-menu-item">
+                                <a href="{{ route('progres.rekap-data') }}">
+                                    Rekap Data
+                                </a>
+                            </li>
+                        @endif
+                    @endif
                 </ul>
             </li>
             <li class="sidebar-menu-item has-dropdown">
@@ -127,25 +141,6 @@
                     <li class="sidebar-dropdown-menu-item">
                         <a href="#">
                             Ganti Password
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            <li class="sidebar-menu-item has-dropdown">
-                <a href="#">
-                    <i class="ri-window-line sidebar-menu-item-icon"></i>
-                    Admin
-                    <i class="ri-arrow-down-s-line sidebar-menu-item-accordion ms-auto"></i>
-                </a>
-                <ul class="sidebar-dropdown-menu">
-                    <li class="sidebar-dropdown-menu-item">
-                        <a href="{{ route('kasbon.index') }}">
-                            Kasbon Marketing
-                        </a>
-                    </li>
-                    <li class="sidebar-dropdown-menu-item">
-                        <a href="{{ route('progres.rekap-marketing') }}">
-                            Rekap Marketing
                         </a>
                     </li>
                 </ul>

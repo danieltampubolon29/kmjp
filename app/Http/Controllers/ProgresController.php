@@ -68,7 +68,7 @@ class ProgresController extends Controller
 
         return view('progres.target-harian', compact('paginatedPencairans', 'currentDay'));
     }
-    // rekap data
+    // rekap data role marketing
     public function getPencairanData(Request $request)
     {
         $request->validate([
@@ -165,20 +165,15 @@ class ProgresController extends Controller
         ]);
     }
 
-    // rekap marketing
-    public function getRekapData(Request $request)
-    {
-        $marketings = User::where('role', 'marketing')->get(['id', 'name']);
-        return response()->json($marketings);
-    }
-
+    // rekap data role admin
     public function getRekapMarketing(Request $request)
     {
         $month = $request->query('month');
         $year = $request->query('year');
-    
+
+        // Ambil data semua marketing
         $marketings = User::where('role', 'marketing')->get(['id', 'name']);
-    
+
         $pencairanData = DB::table('pencairan')
             ->selectRaw('DATE(tanggal_laporan) as date, marketing_id, SUM(nominal) as total_nominal')
             ->whereMonth('tanggal_laporan', $month)
@@ -192,13 +187,138 @@ class ProgresController extends Controller
             ->whereYear('tanggal_laporan', $year)
             ->groupBy('date', 'marketing_id')
             ->get();
-    
+
+        // === Rekap Per Marketing ===
+        $rekapPerMarketing = $marketings->map(function ($marketing) use ($month, $year) {
+            $nasabahBaru = DB::table('pencairan')
+                ->where('marketing_id', $marketing->id)
+                ->whereMonth('tanggal_laporan', $month)
+                ->whereYear('tanggal_laporan', $year)
+                ->where('pinjaman_ke', 1)
+                ->count();
+
+            $jumlahPencairan = DB::table('pencairan')
+                ->where('marketing_id', $marketing->id)
+                ->where('status', 0)
+                ->whereMonth('tanggal_laporan', $month)
+                ->whereYear('tanggal_laporan', $year)
+                ->count();
+
+
+            $beforeStartOfMonth = Carbon::create($year, $month, 1)->subDay()->toDateString();
+
+            $pencairanMarketing = DB::table('pencairan')
+                ->where('marketing_id', $marketing->id)
+                ->get(['id', 'sisa_kredit']);
+
+            $saldoAwal = 0;
+
+            foreach ($pencairanMarketing as $p) {
+                $angsuranSetelah = DB::table('angsuran')
+                    ->where('pencairan_id', $p->id)
+                    ->whereDate('tanggal_laporan', '>', $beforeStartOfMonth)
+                    ->sum('nominal');
+
+                $saldoAwal += ($p->sisa_kredit + $angsuranSetelah);
+            }
+
+            $nominalPencairan = DB::table('pencairan')
+                ->where('marketing_id', $marketing->id)
+                ->whereMonth('tanggal_laporan', $month)
+                ->whereYear('tanggal_laporan', $year)
+                ->sum('nominal');
+
+            $nasabahBayar = DB::table('angsuran')
+                ->join('pencairan', 'angsuran.pencairan_id', '=', 'pencairan.id')
+                ->where('pencairan.marketing_id', $marketing->id)
+                ->whereMonth('angsuran.tanggal_laporan', $month)
+                ->whereYear('angsuran.tanggal_laporan', $year)
+                ->distinct('pencairan.id') 
+                ->count('pencairan.id');
+
+            $nominalAngsuran = DB::table('angsuran')
+                ->where('marketing_id', $marketing->id)
+                ->whereMonth('tanggal_laporan', $month)
+                ->whereYear('tanggal_laporan', $year)
+                ->sum('nominal');
+
+            $saldoBerjalan = $saldoAwal - $nominalAngsuran ;
+            return [
+                'id' => $marketing->id,
+                'name' => $marketing->name,
+                'nasabah_baru' => $nasabahBaru,
+                'saldo_awal' => $saldoAwal,
+                'jumlah_pencairan' => $jumlahPencairan,
+                'nominal_pencairan' => $nominalPencairan,
+                'saldo_berjalan' => $saldoBerjalan,
+                'nasabah_bayar' => $nasabahBayar,
+                'nominal_angsuran' => $nominalAngsuran,
+            ];
+        });
+
+        // === Rekap Total Keseluruhan ===
+        $totalNasabahBaru = DB::table('pencairan')
+            ->whereMonth('tanggal_laporan', $month)
+            ->whereYear('tanggal_laporan', $year)
+            ->where('pinjaman_ke', 1)
+            ->count();
+
+        $totalPencairan = DB::table('pencairan')
+            ->whereMonth('tanggal_laporan', $month)
+            ->whereYear('tanggal_laporan', $year)
+            ->sum('nominal');
+
+        $beforeStartOfMonth = Carbon::create($year, $month, 1)->subDay()->toDateString();
+
+        $pencairanAll = DB::table('pencairan')
+            ->select('id', 'sisa_kredit')
+            ->get();
+
+        $totalSaldoAwal = 0;
+
+        foreach ($pencairanAll as $p) {
+            $angsuranSetelah = DB::table('angsuran')
+                ->where('pencairan_id', $p->id)
+                ->whereDate('tanggal_laporan', '>', $beforeStartOfMonth)
+                ->sum('nominal');
+
+            $totalSaldoAwal += ($p->sisa_kredit + $angsuranSetelah);
+        }
+
+        $totalJumlahPencairan = DB::table('pencairan')
+            ->where('status', 0)
+            ->whereMonth('tanggal_laporan', $month)
+            ->whereYear('tanggal_laporan', $year)
+            ->count();
+
+        $totalNasabahBayar = DB::table('angsuran')
+            ->join('pencairan', 'angsuran.pencairan_id', '=', 'pencairan.id')
+            ->whereMonth('angsuran.tanggal_laporan', $month)
+            ->whereYear('angsuran.tanggal_laporan', $year)
+            ->distinct('pencairan.id')
+            ->count('pencairan.id');
+
+        $totalNominalAngsuran = DB::table('angsuran')
+            ->whereMonth('tanggal_laporan', $month)
+            ->whereYear('tanggal_laporan', $year)
+            ->sum('nominal');
+
+        $totalSaldoBerjalan = $totalSaldoAwal - $totalNominalAngsuran;
+
         return response()->json([
             'marketings' => $marketings,
             'pencairanData' => $pencairanData,
-            'angsuranData' => $angsuranData
+            'angsuranData' => $angsuranData,
+            'rekapUtama' => [
+                'rekap_per_marketing' => $rekapPerMarketing,
+                'total_nasabah_baru' => $totalNasabahBaru,
+                'total_nominal_pencairan' => $totalPencairan,
+                'total_jumlah_pencairan' => $totalJumlahPencairan,
+                'total_saldo_berjalan' => $totalSaldoBerjalan,
+                'total_nasabah_bayar' => $totalNasabahBayar,
+                'total_nominal_angsuran' => $totalNominalAngsuran,
+                'total_saldo_awal' => $totalSaldoAwal
+            ]
         ]);
     }
-    
-    
 }
