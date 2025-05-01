@@ -13,40 +13,47 @@ class ValidasiController extends Controller
 {
     public function pencairan()
     {
-        $datas = Pencairan::where('marketing_id', Auth::id())
-            ->whereNull('tanggal_laporan')
-            ->paginate(10);
 
-        $totalNominal = Pencairan::where('marketing_id', Auth::id())
-            ->whereNull('tanggal_laporan')
-            ->sum('nominal');
+        $query = Pencairan::whereNull('tanggal_laporan');
+
+        if (Auth::user()->role === 'marketing') {
+            $query->where('marketing_id', Auth::id());
+        }
+
+        $datas = $query->paginate(10);
+
+        $totalNominal = $query->sum('nominal');
 
         return view('validasi.pencairan', compact('datas', 'totalNominal'));
     }
 
     public function angsuran()
     {
-        $datas = Angsuran::where('marketing_id', Auth::id())
-            ->whereNull('tanggal_laporan')
-            ->paginate(10);
+        $query = Angsuran::whereNull('tanggal_laporan');
 
-        $totalNominal = Angsuran::where('marketing_id', Auth::id())
-            ->whereNull('tanggal_laporan')
-            ->sum('nominal');
+        if (Auth::user()->role === 'marketing') {
+            $query->where('marketing_id', Auth::id());
+        }
+
+        $datas = $query->paginate(10);
+
+        $totalNominal = $query->sum('nominal');
 
         return view('validasi.angsuran', compact('datas', 'totalNominal'));
     }
 
     public function simpanan()
     {
-        $datas = Simpanan::where('marketing_id', Auth::id())
-            ->whereNull('tanggal_laporan')
-            ->paginate(10);
+        $query = Simpanan::whereNull('tanggal_laporan');
 
-        $totalNominal = Simpanan::where('marketing_id', Auth::id())
-            ->whereNull('tanggal_laporan')
-            ->sum('nominal');
-            
+        if (Auth::user()->role === 'marketing') {
+            $query->where('marketing_id', Auth::id());
+        }
+
+        $datas = $query->paginate(10);
+
+        $totalNominal = $query->sum('nominal');
+
         return view('validasi.simpanan', compact('datas', 'totalNominal'));
     }
 
@@ -58,9 +65,14 @@ class ValidasiController extends Controller
 
         $tanggalLaporan = $request->input('tanggal_laporan');
 
-        Pencairan::where('marketing_id', Auth::id())
-            ->whereNull('tanggal_laporan')
-            ->update(['tanggal_laporan' => $tanggalLaporan]);
+
+        $query = Pencairan::whereNull('tanggal_laporan');
+
+        if (Auth::user()->role === 'marketing') {
+            $query->where('marketing_id', Auth::id());
+        }
+
+        $query->update(['tanggal_laporan' => $tanggalLaporan]);
 
         return redirect()->route('validasi.pencairan')->with('success', 'Validasi Pencairan berhasil dilakukan!');
     }
@@ -72,9 +84,14 @@ class ValidasiController extends Controller
 
         $tanggalLaporan = $request->input('tanggal_laporan');
 
-        Angsuran::where('marketing_id', Auth::id())
-            ->whereNull('tanggal_laporan')
-            ->update(['tanggal_laporan' => $tanggalLaporan]);
+
+        $query = Angsuran::whereNull('tanggal_laporan');
+
+        if (Auth::user()->role === 'marketing') {
+            $query->where('marketing_id', Auth::id());
+        }
+
+        $query->update(['tanggal_laporan' => $tanggalLaporan]);
         return redirect()->route('validasi.angsuran')->with('success', 'Validasi Angsuran berhasil dilakukan!');
     }
 
@@ -86,47 +103,14 @@ class ValidasiController extends Controller
 
         $tanggalLaporan = $request->input('tanggal_laporan');
 
-        Simpanan::where('marketing_id', Auth::id())
-            ->whereNull('tanggal_laporan')
-            ->update(['tanggal_laporan' => $tanggalLaporan]);
+
+        $query = Simpanan::whereNull('tanggal_laporan');
+
+        if (Auth::user()->role === 'marketing') {
+            $query->where('marketing_id', Auth::id());
+        }
+
+        $query->update(['tanggal_laporan' => $tanggalLaporan]);
         return redirect()->route('validasi.simpanan')->with('success', 'Validasi Simpanan berhasil dilakukan!');
-    }
-
-
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Validasi $validasi)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Validasi $validasi)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Validasi $validasi)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Validasi $validasi)
-    {
-        //
     }
 }

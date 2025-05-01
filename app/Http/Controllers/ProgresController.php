@@ -33,8 +33,7 @@ class ProgresController extends Controller
 
     public function rekapMarketing()
     {
-        $marketings = User::where('role', 'marketing')->get();
-        return view('progres.rekap-marketing', compact('marketings'));
+        return view('progres.rekap-marketing');
     }
 
 
@@ -169,120 +168,37 @@ class ProgresController extends Controller
     // rekap marketing
     public function getRekapData(Request $request)
     {
-        $request->validate([
-            'month' => 'required|integer|min:1|max:12',
-            'year' => 'required|integer|min:2000|max:2100',
-            'marketing_id' => 'nullable|exists:users,id',
-        ]);
+        $marketings = User::where('role', 'marketing')->get(['id', 'name']);
+        return response()->json($marketings);
+    }
 
-        $month = $request->input('month');
-        $year = $request->input('year');
-        $marketingId = $request->input('marketing_id');
-
-        if (!$marketingId && Auth::user()->role === 'marketing') {
-            $marketingId = Auth::id();
-        }
-
-        $progres = KasbonHarianMarketing::where('marketing_id', $marketingId)
-            ->where('status', false)
-            ->sum('nominal');
-
-        $totalNominal = KasbonHarianMarketing::where('marketing_id', $marketingId)
-            ->where('status', true)
-            ->sum('nominal');
-        $totalSisaKasbon = KasbonHarianMarketing::where('marketing_id', $marketingId)
-            ->where('status', true)
-            ->sum('sisa_kasbon');
-
-        $totalKasbon = $totalNominal - $totalSisaKasbon;
-
-        $pengambilanKasbon = KasbonHarianMarketing::whereMonth('tanggal', $month)
-            ->whereYear('tanggal', $year)
-            ->where('marketing_id', $marketingId)
-            ->where('status', true)
-            ->sum('nominal');
-
-        $pengembalianKasbon = KasbonHarianMarketing::whereMonth('tanggal', $month)
-            ->whereYear('tanggal', $year)
-            ->where('marketing_id', $marketingId)
-            ->where('status', true)
-            ->sum('sisa_kasbon');
-
-        $kasbonPerbulan = $pengambilanKasbon - $pengembalianKasbon;
-
-        $pencairanData = Pencairan::whereMonth('tanggal_laporan', $month)
+    public function getRekapMarketing(Request $request)
+    {
+        $month = $request->query('month');
+        $year = $request->query('year');
+    
+        $marketings = User::where('role', 'marketing')->get(['id', 'name']);
+    
+        $pencairanData = DB::table('pencairan')
+            ->selectRaw('DATE(tanggal_laporan) as date, marketing_id, SUM(nominal) as total_nominal')
+            ->whereMonth('tanggal_laporan', $month)
             ->whereYear('tanggal_laporan', $year)
-            ->where('marketing_id', $marketingId)
-            ->selectRaw('DATE(tanggal_laporan) as date, SUM(nominal) as total')
-            ->groupBy('date')
-            ->get()
-            ->keyBy('date');
+            ->groupBy('date', 'marketing_id')
+            ->get();
 
-        $totalPencairan = Pencairan::whereMonth('tanggal_laporan', $month)
+        $angsuranData = DB::table('angsuran')
+            ->selectRaw('DATE(tanggal_laporan) as date, marketing_id, SUM(nominal) as total_nominal')
+            ->whereMonth('tanggal_laporan', $month)
             ->whereYear('tanggal_laporan', $year)
-            ->where('marketing_id', $marketingId)
-            ->sum('nominal');
-
-        $angsuranData = Angsuran::whereMonth('tanggal_laporan', $month)
-            ->whereYear('tanggal_laporan', $year)
-            ->where('marketing_id', $marketingId)
-            ->selectRaw('DATE(tanggal_laporan) as date, SUM(nominal) as total')
-            ->groupBy('date')
-            ->get()
-            ->keyBy('date');
-
-        $totalAngsuran = Angsuran::whereMonth('tanggal_laporan', $month)
-            ->whereYear('tanggal_laporan', $year)
-            ->where('marketing_id', $marketingId)
-            ->sum('nominal');
-
-        if (Auth::user()->role === 'marketing') {
-            $userId = $marketingId;
-            $totalAnggota = DB::table('anggota')
-                ->where('marketing_id', $userId)
-                ->count();
-
-            $totalSisaKredit = DB::table('pencairan')
-                ->where('marketing_id', $userId)
-                ->sum('sisa_kredit');
-
-            $totalPencairanPending = DB::table('pencairan')
-                ->where('marketing_id', $userId)
-                ->where('status', 0)
-                ->count();
-
-            $totalSetor = DB::table('simpanan')
-                ->where('marketing_id', $userId)
-                ->where('jenis_transaksi', 'setor')
-                ->sum('nominal');
-
-            $totalTarik = DB::table('simpanan')
-                ->where('marketing_id', $userId)
-                ->where('jenis_transaksi', 'tarik')
-                ->sum('nominal');
-
-            $saldoSimpanan = $totalSetor - $totalTarik;
-        } else {
-            $totalAnggota = 0;
-            $totalSisaKredit = 0;
-            $totalPencairanPending = 0;
-            $saldoSimpanan = 0;
-        }
-
+            ->groupBy('date', 'marketing_id')
+            ->get();
+    
         return response()->json([
-            'pencairan_data' => $pencairanData,
-            'total_pencairan' => $totalPencairan,
-            'angsuran_data' => $angsuranData,
-            'total_angsuran' => $totalAngsuran,
-            'totalAnggota' => $totalAnggota,
-            'totalSisaKredit' => $totalSisaKredit,
-            'totalPencairanPending' => $totalPencairanPending,
-            'saldoSimpanan' => $saldoSimpanan,
-            'pengambilan_kasbon' => $pengambilanKasbon,
-            'pengembalian_kasbon' => $pengembalianKasbon,
-            'kasbon_perbulan' => $kasbonPerbulan,
-            'progres' => $progres,
-            'totalKasbon' => $totalKasbon
+            'marketings' => $marketings,
+            'pencairanData' => $pencairanData,
+            'angsuranData' => $angsuranData
         ]);
     }
+    
+    
 }

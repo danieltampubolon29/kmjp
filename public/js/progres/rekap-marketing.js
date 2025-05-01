@@ -1,106 +1,208 @@
-function getDaysInMonth(year, month) {
-    return new Date(year, month, 0).getDate();
-}
+document.addEventListener("DOMContentLoaded", function () {
+    const monthSelect = document.getElementById("monthSelect");
+    const yearInput = document.getElementById("yearInput");
+    const tableBody = document.getElementById("tableBody");
+    const tableHeaderRow = document
+        .getElementById("tableHeader")
+        .querySelector("tr");
+    const tableSubHeaderRow = document.getElementById("tableSubHeader");
+    const tableFooterRow = document
+        .getElementById("tableFooter")
+        .querySelector("tr");
+    const downloadBtn = document.getElementById("downloadBtn");
 
-function formatCurrency(amount) {
-    if (!amount || amount === '-') return '-';
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-}
+    let marketings = [];
 
-function generateTable() {
-    const month = parseInt(document.getElementById('monthSelect').value);
-    const year = parseInt(document.getElementById('yearInput').value);
-    const marketingId = document.getElementById('marketing').value; 
+    async function fetchMarketings() {
+        try {
+            const month = parseInt(monthSelect.value);
+            const year = parseInt(yearInput.value);
 
-    if (!year || year < 2000 || year > 2100) {
-        alert('Masukkan tahun yang valid (2000-2100).');
-        return;
+            const response = await fetch(
+                `/rekap-data/get-rekap-marketing?month=${month}&year=${year}`
+            );
+            if (!response.ok) throw new Error("Gagal mengambil data");
+            const result = await response.json();
+
+            marketings = result.marketings || [];
+
+            updateHeaders();
+            updateFooter();
+            renderTable(month, year);
+            isiDataPencairan(result.pencairanData);
+            isiDataAngsuran(result.angsuranData);
+        } catch (error) {
+            console.error(error);
+            alert("Terjadi kesalahan saat mengambil data.");
+        }
     }
 
-    const monthNames = [
-        "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-        "Juli", "Agustus", "September", "Oktober", "November", "Desember"
-    ];
-    const selectedMonthName = monthNames[month - 1]; 
-    document.querySelector('#bulanIni').textContent = `DATA BULAN ${selectedMonthName.toUpperCase()}`;
+    function updateHeaders() {
+        tableHeaderRow.innerHTML =
+            '<th rowspan="2" class="text-center align-middle">Tanggal</th>';
+        tableSubHeaderRow.innerHTML = "";
 
-    fetch(`/rekap-data/get-marketing-data?month=${month}&year=${year}&marketing_id=${marketingId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            document.getElementById('totalAnggota').textContent = data.totalAnggota;
-            document.getElementById('saldoSimpanan').textContent = `Rp. ${formatCurrency(data.saldoSimpanan)}`;
-            document.getElementById('totalSisaKredit').textContent = `Rp. ${formatCurrency(data.totalSisaKredit)}`;
-            document.getElementById('totalPencairanPending').textContent = data.totalPencairanPending;
-            document.getElementById('pengambilanKasbon').textContent = `Rp ${formatCurrency(data.pengambilan_kasbon)}`;
-            document.getElementById('progres').textContent = `Rp ${formatCurrency(data.progres)}`;
-            document.getElementById('totalKasbon').textContent = `Rp ${formatCurrency(data.totalKasbon)}`;
-            const pengembalianKasbonElement = document.getElementById('pengembalianKasbon');
-            pengembalianKasbonElement.textContent = `Rp ${formatCurrency(data.pengembalian_kasbon)}`;
-            if (data.pengembalian_kasbon < 0) {
-                pengembalianKasbonElement.style.color = 'red';
-            } else {
-                pengembalianKasbonElement.style.color = '';
-            }
-            document.getElementById('kasbonPerBulan').textContent = `Rp ${formatCurrency(data.kasbon_perbulan)}`;
+        marketings.forEach((marketing) => {
+            const th = document.createElement("th");
+            th.setAttribute("colspan", 2);
+            th.className = "text-center align-middle";
+            th.textContent = marketing.name;
+            tableHeaderRow.appendChild(th);
 
-            const daysInMonth = getDaysInMonth(year, month);
-            const tbody = document.querySelector('#dynamicTable tbody');
-            tbody.innerHTML = '';
-            for (let day = 1; day <= daysInMonth; day++) {
-                const row = document.createElement('tr');
-                const dateKey = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const dateCell = document.createElement('td');
-                dateCell.textContent = `${day}/${month}/${year}`;
-                row.appendChild(dateCell);
+            const pencairanTh = document.createElement("th");
+            pencairanTh.className = "text-center align-middle";
+            pencairanTh.textContent = "Pencairan";
+            pencairanTh.dataset.id = marketing.id;
+            tableSubHeaderRow.appendChild(pencairanTh);
 
-                const pencairanAmount = data.pencairan_data[dateKey]?.total || 0;
-                const pencairanCell = document.createElement('td');
-                pencairanCell.textContent = formatCurrency(pencairanAmount);
-                row.appendChild(pencairanCell);
-
-                const angsuranAmount = data.angsuran_data[dateKey]?.total || 0;
-                const angsuranCell = document.createElement('td');
-                angsuranCell.textContent = formatCurrency(angsuranAmount);
-                row.appendChild(angsuranCell);
-
-                tbody.appendChild(row);
-            }
-
-            document.getElementById('totalPencairan').textContent = formatCurrency(data.total_pencairan);
-            document.getElementById('totalAngsuran').textContent = formatCurrency(data.total_angsuran);
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-            alert('Gagal memuat data dari server.');
+            const angsuranTh = document.createElement("th");
+            angsuranTh.className = "text-center align-middle";
+            angsuranTh.textContent = "Angsuran";
+            angsuranTh.dataset.id = marketing.id;
+            tableSubHeaderRow.appendChild(angsuranTh);
         });
-}
+    }
 
-document.getElementById('marketing').addEventListener('change', generateTable);
-document.getElementById('monthSelect').addEventListener('change', generateTable);
-document.getElementById('yearInput').addEventListener('input', generateTable);
+    function updateFooter() {
+        tableFooterRow.innerHTML =
+            '<td class="text-center align-middle"><strong>Total</strong></td>';
 
-document.getElementById('downloadBtn').addEventListener('click', function () {
-    const cardBody = document.querySelector('.print');
-    html2canvas(cardBody).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const a = document.createElement('a');
-        a.href = imgData;
-        a.download = 'progres.png';
-        a.click();
+        marketings.forEach((marketing) => {
+            const tdPencairan = document.createElement("td");
+            tdPencairan.className = "fw-bold totalPencairan text-end";
+            tdPencairan.dataset.marketing = marketing.id;
+            tdPencairan.dataset.type = "pencairan";
+            tdPencairan.textContent = "-";
+
+            const tdAngsuran = document.createElement("td");
+            tdAngsuran.className = "fw-bold totalAngsuran text-end";
+            tdAngsuran.dataset.marketing = marketing.id;
+            tdAngsuran.dataset.type = "angsuran";
+            tdAngsuran.textContent = "-";
+
+            tableFooterRow.appendChild(tdPencairan);
+            tableFooterRow.appendChild(tdAngsuran);
+        });
+    }
+
+    function generateDates(month, year) {
+        const daysInMonth = new Date(year, month, 0).getDate();
+        const dates = [];
+        for (let i = 1; i <= daysInMonth; i++) {
+            const dateObj = new Date(year, month - 1, i);
+            const iso = `${year}-${String(month).padStart(2, "0")}-${String(
+                i
+            ).padStart(2, "0")}`;
+
+            dates.push({ display: `${i}/${month}/${year}`, iso });
+        }
+        return dates;
+    }
+
+    function renderTable(month, year) {
+        const dates = generateDates(month, year);
+        tableBody.innerHTML = "";
+
+        dates.forEach(({ display, iso }) => {
+            const row = document.createElement("tr");
+            row.dataset.tanggal = iso;
+
+            const tdDate = document.createElement("td");
+            tdDate.className = "text-center align-middle";
+            tdDate.textContent = display;
+            row.appendChild(tdDate);
+
+            marketings.forEach((marketing) => {
+                const tdPencairan = document.createElement("td");
+                tdPencairan.className = "text-end";
+                tdPencairan.dataset.marketing = marketing.id;
+                tdPencairan.dataset.type = "pencairan";
+                tdPencairan.dataset.tanggal = iso;
+                tdPencairan.textContent = "-";
+
+                const tdAngsuran = document.createElement("td");
+                tdAngsuran.className = "text-end";
+                tdAngsuran.dataset.marketing = marketing.id;
+                tdAngsuran.dataset.type = "angsuran";
+                tdAngsuran.dataset.tanggal = iso;
+                tdAngsuran.textContent = "-";
+
+                row.appendChild(tdPencairan);
+                row.appendChild(tdAngsuran);
+            });
+
+            tableBody.appendChild(row);
+        });
+    }
+
+    function isiDataPencairan(dataPencairan) {
+        const totalPerMarketing = {};
+
+        dataPencairan.forEach(({ marketing_id, date, total_nominal }) => {
+            const cell = tableBody.querySelector(
+                `td[data-marketing="${marketing_id}"][data-type="pencairan"][data-tanggal="${date}"]`
+            );
+            if (cell) {
+                cell.textContent = formatCurrency(total_nominal);
+            }
+
+            if (!totalPerMarketing[marketing_id])
+                totalPerMarketing[marketing_id] = 0;
+            totalPerMarketing[marketing_id] += Number(total_nominal);
+        });
+
+        for (const id in totalPerMarketing) {
+            const cell = tableFooterRow.querySelector(
+                `td[data-marketing="${id}"][data-type="pencairan"]`
+            );
+            if (cell) cell.textContent = formatCurrency(totalPerMarketing[id]);
+        }
+    }
+
+    function isiDataAngsuran(dataAngsuran) {
+        const totalPerMarketing = {};
+        dataAngsuran.forEach(({ marketing_id, date, total_nominal })=>  {
+            const cell = tableBody.querySelector(
+                `td[data-marketing="${marketing_id}"][data-type="angsuran"][data-tanggal="${date}"]`
+            );
+            if (cell) {
+                cell.textContent = formatCurrency(total_nominal);
+            }
+            if (!totalPerMarketing[marketing_id]) totalPerMarketing[marketing_id] = 0;
+            totalPerMarketing[marketing_id] += Number(total_nominal);
+        });
+        for (const id in totalPerMarketing) {
+            const cell = tableFooterRow.querySelector(
+                `td[data-marketing="${id}"][data-type="angsuran"]`
+            );
+            if (cell) cell.textContent = formatCurrency(totalPerMarketing[id]);
+        }
+    }
+
+    function formatCurrency(value) {
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+        }).format(value);
+    }
+
+    downloadBtn.addEventListener("click", function () {
+        const container = document.querySelector(".card-body");
+        html2canvas(container).then((canvas) => {
+            const link = document.createElement("a");
+            link.href = canvas.toDataURL("image/png");
+            link.download = `rekap-data-${monthSelect.value}-${yearInput.value}.png`;
+            link.click();
+        });
     });
-});
 
-window.onload = function () {
+    monthSelect.addEventListener("change", fetchMarketings);
+    yearInput.addEventListener("input", fetchMarketings);
+
+    // Load awal
     const today = new Date();
-    const currentMonth = today.getMonth() + 1;
-    const currentYear = today.getFullYear();
-    document.getElementById('monthSelect').value = currentMonth;
-    document.getElementById('yearInput').value = currentYear;
-
-    generateTable();
-};
+    monthSelect.value = today.getMonth() + 1;
+    yearInput.value = today.getFullYear();
+    fetchMarketings();
+});
