@@ -28,7 +28,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         rekapPerMarketing.forEach((marketingData) => {
-            console.log(marketingData);
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td class="text-start">${marketingData.name}</td>
