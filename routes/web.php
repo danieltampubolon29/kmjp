@@ -105,14 +105,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan-harian', [LaporanController::class, 'harian'])->name('laporan.harian');
     Route::post('/laporan/get-filtered-data', [LaporanController::class, 'getFilteredData'])->name('laporan.getFilteredData');
 });
+
+// scan angsuran start
+Route::get('/api/pencairan/{id}/next-angsuran', [AngsuranController::class, 'getNextAngsuran']);
+Route::get('/api/pencairan/{id}/with-angsuran', [AngsuranController::class, 'getPencairanWithAngsuran']);
+Route::post('/angsuran/store-multiple', [AngsuranController::class, 'storeMultiple'])->name('angsuran.store.multiple');
+Route::get('/input/angsuran', [CekdataController::class, 'angsuran'])->name('marketing.angsuran');
 Route::get('/api/anggota/{no_anggota}/pinjaman', function ($no_anggota) {
-    $anggota = Anggota::where('no_anggota', $no_anggota)->first();
+    $anggota = \App\Models\Anggota::where('no_anggota', $no_anggota)->first();
 
     if (!$anggota) {
         return response()->json(['success' => false, 'message' => 'Anggota tidak ditemukan']);
     }
 
-    $pencairanAktif = Pencairan::where('no_anggota', $no_anggota)
+    $pencairanAktif = \App\Models\Pencairan::where('no_anggota', $no_anggota)
         ->where('sisa_kredit', '>', 0)
         ->get();
 
@@ -127,7 +133,6 @@ require __DIR__ . '/auth.php';
 Route::middleware('auth', 'MarketingMiddleware')->group(function () {
     Route::get('/dashboard', [MarketingController::class, 'index'])->name('marketing.dashboard');
     Route::get('/cek-data', [CekdataController::class, 'marketing'])->name('marketing.cek-data');
-    Route::get('/input/angsuran', [CekdataController::class, 'angsuran'])->name('marketing.angsuran');
 });
 
 Route::middleware('auth', 'AdminMiddleware')->group(function () {

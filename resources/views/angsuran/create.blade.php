@@ -107,3 +107,4 @@
         </x-slot>
     </x-bar.navbar>
 @endsection
+    

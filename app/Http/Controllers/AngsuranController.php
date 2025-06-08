@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
 use App\Models\Angsuran;
 use App\Models\Pencairan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class AngsuranController extends Controller
@@ -44,6 +46,7 @@ class AngsuranController extends Controller
         $pencairanId = $request->query('pencairan_id');
         return view('angsuran.create', compact('pencairanId'));
     }
+
 
     public function store(Request $request)
     {
@@ -222,5 +225,227 @@ class AngsuranController extends Controller
         });
 
         return response()->json($pencairans);
+    }
+
+    // scan angsuran
+    // Tambahkan method ini ke AngsuranController yang sudah ada
+
+    /**
+     * Get next angsuran number for a pencairan
+     */
+    public function getNextAngsuran($pencairanId)
+    {
+        $angsuranList = Angsuran::where('pencairan_id', $pencairanId)
+            ->orderBy('angsuran_ke', 'asc')
+            ->pluck('angsuran_ke')
+            ->toArray();
+
+        $angsuranKe = 1;
+        for ($i = 1; $i <= count($angsuranList) + 1; $i++) {
+            if (!in_array($i, $angsuranList)) {
+                $angsuranKe = $i;
+                break;
+            }
+        }
+
+        return response()->json([
+            'angsuran_ke' => $angsuranKe,
+            'total_angsuran' => count($angsuranList)
+        ]);
+    }
+
+    /**
+     * Store multiple angsuran at once
+     */
+    public function storeMultiple(Request $request)
+    {
+        // Log request data untuk debugging
+        Log::info('Store Multiple Request Data:', $request->all());
+
+        try {
+            $request->validate([
+                'angsuran_data' => 'required|array|min:1',
+                'angsuran_data.*.pencairan_id' => 'required|integer|exists:pencairan,id',
+                'angsuran_data.*.angsuran_ke' => 'required|integer|min:1',
+                'angsuran_data.*.jenis_transaksi' => 'required|string',
+                'angsuran_data.*.nominal' => 'required|integer|min:1',
+                'angsuran_data.*.tanggal_angsuran' => 'required|date',
+                'angsuran_data.*.latitude' => 'nullable|string',
+                'angsuran_data.*.longitude' => 'nullable|string',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation Error:', $e->errors());
+            return response()->json([
+                'success' => false,
+                'message' => 'Data tidak valid',
+                'errors' => $e->errors()
+            ], 422);
+        }
+
+        $errors = [];
+        $successCount = 0;
+        $createdAngsuran = [];
+
+        try {
+            DB::beginTransaction();
+
+            foreach ($request->angsuran_data as $index => $angsuranData) {
+                try {
+                    $pencairan = Pencairan::findOrFail($angsuranData['pencairan_id']);
+
+                    // Validasi sisa kredit
+                    if ($pencairan->sisa_kredit < $angsuranData['nominal']) {
+                        $errors[] = "Data ke-" . ($index + 1) . ": Nominal angsuran melebihi sisa kredit untuk anggota {$pencairan->nama}";
+                        continue;
+                    }
+
+                    // Validasi marketing (jika user adalah marketing, hanya bisa input data miliknya)
+                    if (Auth::user()->role === 'marketing' && $pencairan->marketing_id !== Auth::id()) {
+                        $errors[] = "Data ke-" . ($index + 1) . ": Anda tidak memiliki akses untuk menginput angsuran anggota {$pencairan->nama}";
+                        continue;
+                    }
+
+                    // Cek apakah angsuran dengan nomor tersebut sudah ada
+                    $existingAngsuran = Angsuran::where('pencairan_id', $angsuranData['pencairan_id'])
+                        ->where('angsuran_ke', $angsuranData['angsuran_ke'])
+                        ->first();
+
+                    if ($existingAngsuran) {
+                        $errors[] = "Data ke-" . ($index + 1) . ": Angsuran ke-{$angsuranData['angsuran_ke']} untuk anggota {$pencairan->nama} sudah ada";
+                        continue;
+                    }
+
+                    // Buat angsuran baru
+                    $angsuran = Angsuran::create([
+                        'pencairan_id' => $angsuranData['pencairan_id'],
+                        'angsuran_ke' => $angsuranData['angsuran_ke'],
+                        'jenis_transaksi' => $angsuranData['jenis_transaksi'],
+                        'nominal' => $angsuranData['nominal'],
+                        'tanggal_angsuran' => $angsuranData['tanggal_angsuran'],
+                        'marketing_id' => Auth::id(),
+                        'latitude' => $angsuranData['latitude'] ?? null,
+                        'longitude' => $angsuranData['longitude'] ?? null,
+                    ]);
+
+                    // Update sisa kredit pencairan
+                    $newSisaKredit = $pencairan->sisa_kredit - $angsuranData['nominal'];
+                    $pencairan->update([
+                        'sisa_kredit' => $newSisaKredit,
+                        'status' => $newSisaKredit === 0 ? true : $pencairan->status,
+                    ]);
+
+                    $createdAngsuran[] = $angsuran;
+                    $successCount++;
+                } catch (\Exception $e) {
+                    Log::error("Error processing angsuran data index {$index}:", [
+                        'error' => $e->getMessage(),
+                        'data' => $angsuranData
+                    ]);
+                    $errors[] = "Data ke-" . ($index + 1) . ": " . $e->getMessage();
+                }
+            }
+
+            // Jika ada data yang berhasil disimpan, commit transaction
+            if ($successCount > 0) {
+                DB::commit();
+
+                $message = "Berhasil menyimpan {$successCount} data angsuran.";
+                if (!empty($errors)) {
+                    $message .= " Namun ada " . count($errors) . " data yang gagal disimpan.";
+                }
+
+                Log::info("Successfully stored {$successCount} angsuran records");
+
+                return response()->json([
+                    'success' => true,
+                    'message' => $message,
+                    'success_count' => $successCount,
+                    'errors' => $errors,
+                    'created_data' => $createdAngsuran
+                ]);
+            } else {
+                DB::rollback();
+                Log::warning('No angsuran data was saved', ['errors' => $errors]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Tidak ada data yang berhasil disimpan.',
+                    'errors' => $errors
+                ], 400);
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+            Log::error('Store Multiple Exception:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get pencairan data with calculated angsuran info (for API)
+     */
+    public function getPencairanWithAngsuran($pencairanId)
+    {
+        try {
+            $pencairan = Pencairan::with(['anggota'])->findOrFail($pencairanId);
+
+            // Hitung angsuran ke berdasarkan angsuran yang sudah ada
+            $angsuranList = Angsuran::where('pencairan_id', $pencairanId)
+                ->orderBy('angsuran_ke', 'asc')
+                ->pluck('angsuran_ke')
+                ->toArray();
+
+            $angsuranKe = 1;
+            for ($i = 1; $i <= count($angsuranList) + 1; $i++) {
+                if (!in_array($i, $angsuranList)) {
+                    $angsuranKe = $i;
+                    break;
+                }
+            }
+
+            // Hitung nominal default
+            $nominalPencairan = floatval($pencairan->nominal);
+            $tenor = intval($pencairan->tenor);
+            $calculatedNominal = $tenor > 0 ?
+                floor(($nominalPencairan + ($nominalPencairan * 0.2)) / $tenor) : 0;
+
+            return response()->json([
+                'success' => true,
+                'pencairan' => $pencairan,
+                'angsuran_ke' => $angsuranKe,
+                'calculated_nominal' => $calculatedNominal,
+                'total_angsuran_exist' => count($angsuranList),
+                'is_sequential' => $this->checkSequentialAngsuran($angsuranList)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data pencairan tidak ditemukan'
+            ], 404);
+        }
+    }
+
+    /**
+     * Check if angsuran sequence is valid
+     */
+    private function checkSequentialAngsuran($angsuranList)
+    {
+        if (empty($angsuranList)) {
+            return true;
+        }
+
+        sort($angsuranList);
+
+        for ($i = 0; $i < count($angsuranList); $i++) {
+            if ($angsuranList[$i] !== ($i + 1)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
