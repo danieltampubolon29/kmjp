@@ -110,7 +110,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/api/pencairan/{id}/next-angsuran', [AngsuranController::class, 'getNextAngsuran']);
 Route::get('/api/pencairan/{id}/with-angsuran', [AngsuranController::class, 'getPencairanWithAngsuran']);
 Route::post('/angsuran/store-multiple', [AngsuranController::class, 'storeMultiple'])->name('angsuran.store.multiple');
-Route::get('/input/angsuran', [CekdataController::class, 'angsuran'])->name('marketing.angsuran');
+Route::get('/input/angsuran', [CekdataController::class, 'angsuran'])->name('scan.angsuran');
 Route::get('/api/anggota/{no_anggota}/pinjaman', function ($no_anggota) {
     $anggota = \App\Models\Anggota::where('no_anggota', $no_anggota)->first();
 

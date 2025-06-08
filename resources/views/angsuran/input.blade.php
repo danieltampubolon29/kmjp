@@ -5,7 +5,6 @@
         <x-slot name="content">
             <div class="container mt-4">
                 <div class="row">
-                    <!-- QR Scanner Section -->
                     <div class="col-md-3 mb-5">
                         <div class="card shadow">
                             <div class="card-header bg-primary text-white">
@@ -19,7 +18,6 @@
                         </div>
                     </div>
 
-                    <!-- Angsuran List Section -->
                     <div class="col-md-9 mb-3">
                         <x-alert-message></x-alert-message>
                         <div class="card shadow">
@@ -53,21 +51,15 @@
                 </div>
             </div>
 
-            <!-- Audio untuk beep -->
             <audio id="scan-sound">
                 <source src="{{ asset('sounds/qr-scan-beep.mp3') }}" type="audio/mpeg">
                 Browser Anda tidak mendukung audio.
             </audio>
 
-            <!-- Meta CSRF Token -->
             <meta name="csrf-token" content="{{ csrf_token() }}">
-
-            <!-- Script HTML5Qrcode -->
             <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
-            <!-- Script Utama -->
             <script>
-                // Script untuk halaman input angsuran dengan QR Scanner
                 const reader = document.getElementById('reader');
                 const resultText = document.getElementById('result-text');
                 const angsuranList = document.getElementById('angsuran-list');
@@ -79,7 +71,6 @@
                 let angsuranData = [];
 
                 function showScanResult(data) {
-                    // Putar suara beep
                     const scanSound = document.getElementById("scan-sound");
                     if (scanSound) {
                         scanSound.play().catch(err => console.log('Audio play failed:', err));
@@ -87,7 +78,6 @@
 
                     resultText.textContent = data;
 
-                    // Pause scanner dengan pengecekan yang lebih aman
                     if (scanner && typeof scanner.pause === 'function') {
                         try {
                             scanner.pause();
@@ -98,7 +88,6 @@
 
                     fetchAngsuranData(data);
 
-                    // Resume scanner setelah delay dengan pengecekan yang lebih aman
                     setTimeout(() => {
                         if (scanner && typeof scanner.resume === 'function') {
                             try {
@@ -143,7 +132,6 @@
                     setGeolocation();
                 });
 
-                // Ambil data pinjaman berdasarkan no_anggota
                 function fetchAngsuranData(noAnggota) {
                     fetch(`/api/anggota/${noAnggota}/pinjaman`)
                         .then(res => {
@@ -165,10 +153,8 @@
                         });
                 }
 
-                // Tampilkan data pinjaman di card
                 function renderPencairan(pencairanList, anggota) {
                     pencairanList.forEach(pencairan => {
-                        // Cek apakah data sudah ada di list
                         const existingItem = angsuranData.find(item => item.pencairan_id === pencairan.id);
                         if (existingItem) {
                             alert(
@@ -177,7 +163,6 @@
                             return;
                         }
 
-                        // Hitung angsuran ke berdasarkan angsuran yang sudah ada
                         fetch(`/api/pencairan/${pencairan.id}/next-angsuran`)
                             .then(res => {
                                 if (!res.ok) {
@@ -190,55 +175,53 @@
                                 div.className = 'col-md-12 mb-2';
                                 div.dataset.pencairanId = pencairan.id;
 
-                                // Hitung nominal default
                                 const nominalPencairan = parseFloat(pencairan.nominal) || 0;
                                 const tenorValue = parseInt(pencairan.tenor) || 1;
                                 const defaultNominal = tenorValue > 0 ?
                                     Math.floor((nominalPencairan + (nominalPencairan * 0.2)) / tenorValue) : 0;
 
                                 div.innerHTML = `
-                    <div class="card border">
-                        <div class="card-body p-3">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <!-- Info Anggota -->
-                                <div class="flex-grow-1 text-start">
-                                    <h6 class="mb-1">${anggota.nama}</h6>
-                                    <small class="text-muted">
-                                        ${anggota.no_anggota} | Pinjaman ke-${pencairan.pinjaman_ke} | 
-                                        Angsuran ke-${angsuranInfo.angsuran_ke}
-                                    </small>
-                                    <br>
-                                    <small class="text-info">
-                                        Sisa Kredit: ${formatToRupiah(pencairan.sisa_kredit)}
-                                    </small>
-                                </div>
+                                    <div class="card border">
+                                        <div class="card-body p-3">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <!-- Info Anggota -->
+                                                <div class="flex-grow-1 text-start">
+                                                    <h6 class="mb-1">${anggota.nama}</h6>
+                                                    <small class="text-muted">
+                                                        ${anggota.no_anggota} | Pinjaman ke-${pencairan.pinjaman_ke} | 
+                                                        Angsuran ke-${angsuranInfo.angsuran_ke}
+                                                    </small>
+                                                    <br>
+                                                    <small class="text-info">
+                                                        Sisa Kredit: ${formatToRupiah(pencairan.sisa_kredit)}
+                                                    </small>
+                                                </div>
 
-                                <!-- Input Nominal Angsuran -->
-                                <div class="mx-2" style="width: 160px;">
-                                    <input type="text" 
-                                           class="form-control form-control-sm numeric-input" 
-                                           placeholder="0" 
-                                           value="${formatRupiah(defaultNominal.toString())}"
-                                           maxlength="14"
-                                           oninput="handleInputChange(this)"
-                                           data-pencairan-id="${pencairan.id}"
-                                           data-angsuran-ke="${angsuranInfo.angsuran_ke}"
-                                           data-sisa-kredit="${pencairan.sisa_kredit}"
-                                           required>
-                                </div>
+                                                <!-- Input Nominal Angsuran -->
+                                                <div class="mx-2" style="width: 160px;">
+                                                    <input type="text" 
+                                                        class="form-control form-control-sm numeric-input" 
+                                                        placeholder="0" 
+                                                        value="${formatRupiah(defaultNominal.toString())}"
+                                                        maxlength="14"
+                                                        oninput="handleInputChange(this)"
+                                                        data-pencairan-id="${pencairan.id}"
+                                                        data-angsuran-ke="${angsuranInfo.angsuran_ke}"
+                                                        data-sisa-kredit="${pencairan.sisa_kredit}"
+                                                        required>
+                                                </div>
 
-                                <!-- Tombol Hapus -->
-                                <div class="ms-2">
-                                    <button class="btn btn-danger btn-sm remove-btn" type="button" title="Hapus">
-                                        <i class="ri-delete-bin-2-fill"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                                                <!-- Tombol Hapus -->
+                                                <div class="ms-2">
+                                                    <button class="btn btn-danger btn-sm remove-btn" type="button" title="Hapus">
+                                                        <i class="ri-delete-bin-2-fill"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
 
-                                // Event hapus
                                 div.querySelector('.remove-btn').addEventListener('click', () => {
                                     angsuranData = angsuranData.filter(item => item.pencairan_id !== pencairan
                                         .id);
@@ -248,7 +231,6 @@
 
                                 angsuranList.appendChild(div);
 
-                                // Tambahkan ke array data dengan nilai default
                                 angsuranData.push({
                                     pencairan_id: pencairan.id,
                                     angsuran_ke: angsuranInfo.angsuran_ke,
@@ -267,7 +249,6 @@
                     });
                 }
 
-                // Handle input change untuk format rupiah dan update data
                 function handleInputChange(input) {
                     const formattedValue = formatRupiah(input.value);
                     input.value = formattedValue;
@@ -276,7 +257,6 @@
                     const nominal = parseRupiah(input.value);
                     const sisaKredit = parseInt(input.dataset.sisaKredit);
 
-                    // Validasi nominal tidak melebihi sisa kredit
                     if (nominal > sisaKredit) {
                         alert('Nominal angsuran tidak boleh melebihi sisa kredit!');
                         input.value = formatRupiah(sisaKredit.toString());
@@ -291,20 +271,17 @@
                     updateTotals();
                 }
 
-                // Format nominal ribuan
                 function formatRupiah(angka) {
                     let numberString = angka.replace(/[^0-9]/g, '');
                     if (numberString.length > 8) numberString = numberString.slice(0, 8);
                     return numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
                 }
 
-                // Fungsi untuk mengkonversi format rupiah ke angka
                 function parseRupiah(rupiahString) {
                     if (!rupiahString || rupiahString.trim() === '') return 0;
                     return parseInt(rupiahString.replace(/\./g, '')) || 0;
                 }
 
-                // Fungsi untuk memformat angka ke format rupiah dengan prefix
                 function formatToRupiah(angka) {
                     return new Intl.NumberFormat('id-ID', {
                         style: 'currency',
@@ -314,7 +291,6 @@
                     }).format(angka);
                 }
 
-                // Update total data dan total nominal
                 function updateTotals() {
                     const inputs = document.querySelectorAll('#angsuran-list .numeric-input');
                     let totalData = 0;
@@ -332,7 +308,6 @@
                     totalNominalElement.textContent = formatToRupiah(totalNominal);
                 }
 
-                // Fungsi untuk mendapatkan geolocation
                 let latitude = null;
                 let longitude = null;
 
@@ -347,15 +322,12 @@
                     }
                 }
 
-                // Fungsi submit multiple angsuran
                 function submitMultipleAngsuran() {
-                    // Validasi data
                     if (angsuranData.length === 0) {
                         alert('Tidak ada data angsuran untuk disimpan!');
                         return;
                     }
 
-                    // Filter data yang memiliki nominal > 0
                     const validData = angsuranData.filter(item => item.nominal > 0);
 
                     if (validData.length === 0) {
@@ -363,16 +335,13 @@
                         return;
                     }
 
-                    // Konfirmasi sebelum submit
                     if (!confirm(`Yakin ingin menyimpan ${validData.length} data angsuran?`)) {
                         return;
                     }
 
-                    // Disable tombol save
                     saveButton.disabled = true;
                     saveButton.innerHTML = '<i class="ri-loader-2-line"></i>';
 
-                    // Siapkan data untuk dikirim
                     const tanggalAngsuran = document.getElementById('tanggal-angsuran')?.value || new Date().toISOString().split(
                         'T')[0];
 
@@ -388,8 +357,6 @@
                         }))
                     };
 
-
-                    // Submit ke server
                     fetch('/angsuran/store-multiple', {
                             method: 'POST',
                             headers: {
@@ -402,14 +369,12 @@
                         .then(response => {
 
                             if (!response.ok) {
-                                // Untuk error 422, kita perlu membaca response body untuk mendapatkan detail error
                                 return response.json().then(errorData => {
                                     console.log('Error response data:', errorData);
                                     throw new Error(
                                         `Validation Error: ${JSON.stringify(errorData.errors || errorData.message)}`
                                         );
                                 }).catch(jsonError => {
-                                    // Jika response bukan JSON, throw error HTTP biasa
                                     throw new Error(`HTTP error! status: ${response.status}`);
                                 });
                             }
@@ -424,7 +389,6 @@
                         .then(data => {
                             if (data.success) {
                                 alert('Data angsuran berhasil disimpan!');
-                                // Reset form
                                 angsuranData = [];
                                 angsuranList.innerHTML = '';
                                 updateTotals();
@@ -447,10 +411,7 @@
                         });
                 }
 
-                // Event listener untuk tombol save
                 saveButton.addEventListener('click', submitMultipleAngsuran);
-
-                // Inisialisasi total saat halaman dimuat
                 document.addEventListener('DOMContentLoaded', function() {
                     updateTotals();
                 });

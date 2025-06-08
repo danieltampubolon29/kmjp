@@ -9,6 +9,7 @@
                         <h5 class="mb-0">Daftar Angsuran</h5>
                         <div>
                             <a href="{{ route('angsuran.create') }}" class="btn btn-light"><i class="ri-user-add-line"></i></a>
+                            <a href="{{ route('scan.angsuran') }}" class="btn btn-light"><i class="ri-qr-code-line"></i></a>
                         </div>
                     </div>
                     <div class="card-body">

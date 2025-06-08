@@ -43,8 +43,8 @@
                         </a>
                     </li>
                     <li class="sidebar-dropdown-menu-item">
-                        <a href="{{ route('marketing.angsuran') }}">
-                            Input Angsuran
+                        <a href="{{ route('scan.angsuran') }}">
+                            Scan Angsuran
                         </a>
                     </li>
                 </ul>
@@ -118,7 +118,7 @@
                             </li>
                             <li class="sidebar-dropdown-menu-item">
                                 <a href="{{ route('admin.cek-data') }}">
-                                    Cek Data admin
+                                    Cek Data Nasabah
                                 </a>
                             </li>
                         @elseif(Auth::user()->role === 'marketing')
@@ -134,7 +134,7 @@
                             </li>
                             <li class="sidebar-dropdown-menu-item">
                                 <a href="{{ route('marketing.cek-data') }}">
-                                    Cek Data marketing
+                                    Cek Data Nasabah
                                 </a>
                             </li>
                         @endif
