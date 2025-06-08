@@ -152,6 +152,85 @@
                                 @endif
                             </div>
                         </div>
+
+                        <!-- Modifikasi HTML Anda -->
+                        <div class="card shadow mt-3">
+                            <div class="card-header bg-primary d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0 text-white">BARCODE</h5>
+                                @if ($anggota->no_anggota)
+                                    <a href="javascript:void(0)" onclick="downloadQRCode()" class="btn btn-sm btn-light">
+                                        <i class="ri-download-2-line"></i>
+                                    </a>
+                                @endif
+                            </div>
+                            <div class="card-body text-center" id="qr-container">
+                                @if ($anggota->no_anggota)
+                                    {!! QrCode::size(100)->margin(2)->generate($anggota->no_anggota) !!}
+                                @else
+                                    <p class="text-muted">Barcode Error</p>
+                                @endif
+                            </div>
+                        </div>
+
+                        <script>
+                            function downloadQRCode() {
+                                // Ambil SVG element dari QR code yang di-generate Laravel
+                                const svgElement = document.querySelector('#qr-container svg');
+
+                                if (!svgElement) {
+                                    alert('QR Code tidak ditemukan');
+                                    return;
+                                }
+
+                                // Buat canvas element
+                                const canvas = document.createElement('canvas');
+                                const ctx = canvas.getContext('2d');
+
+                                // Set ukuran canvas (sesuaikan dengan size QR code + margin)
+                                canvas.width = 120; // 100px + margin
+                                canvas.height = 120;
+
+                                // Konversi SVG ke data string
+                                const svgData = new XMLSerializer().serializeToString(svgElement);
+                                const svgBlob = new Blob([svgData], {
+                                    type: 'image/svg+xml;charset=utf-8'
+                                });
+                                const url = URL.createObjectURL(svgBlob);
+
+                                // Buat image element untuk load SVG
+                                const img = new Image();
+
+                                img.onload = function() {
+                                    // Set background putih
+                                    ctx.fillStyle = 'white';
+                                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                                    // Gambar SVG ke canvas
+                                    ctx.drawImage(img, 10, 10, 100, 100);
+
+                                    // Convert canvas ke PNG dan download
+                                    const link = document.createElement('a');
+                                    link.download = 'qrcode-{{ $anggota->no_anggota ?? 'member' }}.png';
+                                    link.href = canvas.toDataURL('image/png', 1.0);
+
+                                    // Trigger download
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+
+                                    // Cleanup
+                                    URL.revokeObjectURL(url);
+                                };
+
+                                img.onerror = function() {
+                                    alert('Error saat mengkonversi QR Code');
+                                    URL.revokeObjectURL(url);
+                                };
+
+                                // Load SVG sebagai image
+                                img.src = url;
+                            }
+                        </script>
                     </div>
 
                 </div>

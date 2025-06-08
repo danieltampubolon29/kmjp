@@ -42,6 +42,11 @@
                             Angsuran
                         </a>
                     </li>
+                    <li class="sidebar-dropdown-menu-item">
+                        <a href="{{ route('marketing.angsuran') }}">
+                            Input Angsuran
+                        </a>
+                    </li>
                 </ul>
             </li>
             <li class="sidebar-menu-item has-dropdown">
@@ -111,6 +116,11 @@
                                     Rekap Marketing
                                 </a>
                             </li>
+                            <li class="sidebar-dropdown-menu-item">
+                                <a href="{{ route('admin.cek-data') }}">
+                                    Cek Data admin
+                                </a>
+                            </li>
                         @elseif(Auth::user()->role === 'marketing')
                             <li class="sidebar-dropdown-menu-item">
                                 <a href="{{ route('progres.target-harian') }}">
@@ -120,6 +130,11 @@
                             <li class="sidebar-dropdown-menu-item">
                                 <a href="{{ route('progres.rekap-data') }}">
                                     Rekap Data
+                                </a>
+                            </li>
+                            <li class="sidebar-dropdown-menu-item">
+                                <a href="{{ route('marketing.cek-data') }}">
+                                    Cek Data marketing
                                 </a>
                             </li>
                         @endif

@@ -15,6 +15,9 @@
     <link rel="stylesheet" href="{{ asset('css/navbar.css') }}">
     <link rel="stylesheet" href="{{ asset('bootstrap/css/bootstrap.css') }}">
     <!-- end: CSS -->
+    <!-- start: barcode -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js"></script> 
+    <!-- end: barcode -->
     <title>KMJP | @yield('title')</title>
     <link rel="icon" href="{{ asset('img/logo.png') }}" type="image/png">
 </head>
